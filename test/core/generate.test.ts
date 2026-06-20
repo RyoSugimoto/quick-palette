@@ -1,0 +1,119 @@
+import { describe, expect, it } from "vitest";
+import {
+  InvalidHexColorError,
+  hexToOklch,
+  isInSrgb,
+  isValidHex,
+  normalizeHex,
+  normalizeHue,
+} from "../../src/core/color.js";
+import {
+  DEFAULT_COLOR_STEPS,
+  DEFAULT_NEUTRAL_STEPS,
+  HUE_OFFSETS,
+  TINTED_NEUTRAL_MAX_CHROMA,
+} from "../../src/core/constants.js";
+import { generatePalette } from "../../src/core/generate.js";
+import { HARMONY_MODES, NEUTRAL_MODES, STEP_COUNTS, type PaletteConfig } from "../../src/core/types.js";
+
+const baseConfig: PaletteConfig = {
+  baseColor: "#2563EB",
+  harmony: "analogous",
+  neutralMode: "tinted",
+  colorSteps: 5,
+  neutralSteps: 9,
+};
+
+describe("HEX handling", () => {
+  it("normalizes short and lowercase HEX values", () => {
+    expect(normalizeHex(" #abc ")).toBe("#AABBCC");
+    expect(normalizeHex("#12abEF")).toBe("#12ABEF");
+  });
+
+  it.each(["2563EB", "#12", "#1234", "#GGGGGG", ""]) (
+    "rejects invalid input %j",
+    (value) => expect(() => normalizeHex(value)).toThrow(InvalidHexColorError),
+  );
+
+  it.each(["#abc", " #12abEF ", "#2563EB"])("recognizes valid input %j", (value) => {
+    expect(isValidHex(value)).toBe(true);
+  });
+});
+
+describe("palette generation", () => {
+  it("uses five steps as the default for colors and neutrals", () => {
+    expect(DEFAULT_COLOR_STEPS).toBe(5);
+    expect(DEFAULT_NEUTRAL_STEPS).toBe(5);
+  });
+
+  it("is deterministic", () => {
+    expect(generatePalette(baseConfig)).toEqual(generatePalette(baseConfig));
+  });
+
+  it.each(STEP_COUNTS)("returns the requested %i lightness steps for every harmony hue", (colorSteps) => {
+    const result = generatePalette({ ...baseConfig, colorSteps });
+    expect(result.colors).toHaveLength(colorSteps * HUE_OFFSETS[baseConfig.harmony].length);
+
+    for (let start = 0; start < result.colors.length; start += colorSteps) {
+      const lightness = result.colors.slice(start, start + colorSteps).map((hex) => hexToOklch(hex).l);
+      expect(lightness).toEqual([...lightness].sort((a, b) => a - b));
+    }
+  });
+
+  it.each(STEP_COUNTS)("returns the requested %i neutral steps", (neutralSteps) => {
+    expect(generatePalette({ ...baseConfig, neutralSteps }).neutrals).toHaveLength(neutralSteps);
+  });
+
+  it.each(HARMONY_MODES)("supports the %s harmony", (harmony) => {
+    const result = generatePalette({ ...baseConfig, harmony });
+    expect(result.colors).toHaveLength(
+      baseConfig.colorSteps * HUE_OFFSETS[harmony].length,
+    );
+
+    const baseHue = hexToOklch(baseConfig.baseColor).h;
+    HUE_OFFSETS[harmony].forEach((offset, groupIndex) => {
+      const representative = result.colors[(groupIndex * baseConfig.colorSteps) + 2];
+      expect(representative).toBeDefined();
+      const actualHue = hexToOklch(representative as string).h;
+      expect(hueDistance(actualHue, normalizeHue(baseHue + offset))).toBeLessThan(2);
+    });
+  });
+
+  it.each(["#000000", "#808080", "#FFFFFF"])(
+    "keeps an achromatic base color %s achromatic",
+    (baseColor) => {
+      const result = generatePalette({ ...baseConfig, baseColor, harmony: "monochrome" });
+      for (const hex of result.colors) {
+        expect(hexToOklch(hex).c).toBeLessThan(0.005);
+      }
+    },
+  );
+
+  it.each(NEUTRAL_MODES)("supports the %s neutral mode", (neutralMode) => {
+    expect(generatePalette({ ...baseConfig, neutralMode }).neutrals).toHaveLength(baseConfig.neutralSteps);
+  });
+
+  it("keeps base-tinted grays subtly chromatic", () => {
+    const result = generatePalette({ ...baseConfig, baseColor: "#FF00FF", neutralMode: "tinted" });
+    for (const hex of result.neutrals) {
+      expect(hexToOklch(hex).c).toBeLessThanOrEqual(TINTED_NEUTRAL_MAX_CHROMA + 0.002);
+    }
+  });
+
+  it("returns only valid, in-gamut sRGB HEX values", () => {
+    for (const harmony of HARMONY_MODES) {
+      for (const neutralMode of NEUTRAL_MODES) {
+        const result = generatePalette({ ...baseConfig, baseColor: "#FF00FF", harmony, neutralMode });
+        for (const hex of [...result.colors, ...result.neutrals]) {
+          expect(isValidHex(hex)).toBe(true);
+          expect(isInSrgb(hexToOklch(hex))).toBe(true);
+        }
+      }
+    }
+  });
+});
+
+function hueDistance(left: number, right: number): number {
+  const difference = Math.abs(normalizeHue(left) - normalizeHue(right));
+  return Math.min(difference, 360 - difference);
+}

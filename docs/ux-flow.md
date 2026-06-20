@@ -17,7 +17,8 @@ flowchart TD
   Mood --> Harmony
   UseCase --> Harmony
 
-  Harmony --> Neutral[Choose neutral palette]
+  Harmony --> Tuning[Choose harmony tuning<br/>Mechanical by default]
+  Tuning --> Neutral[Choose neutral palette]
   Neutral --> Initial[Generate initial palette with 5 color and 5 neutral steps]
   Initial --> Preview[Show terminal preview]
   Preview --> Review{Review action}
@@ -45,18 +46,18 @@ flowchart TD
 
 ## Selection behavior
 
-In a TTY, `src/cli/prompt.ts` renders a cursor beside the active option. Up and Down wrap around the available choices, and Enter returns the selected value. Step prompts start on their configured default, which is 5 for both colors and neutrals.
+In a TTY, `src/cli/prompt.ts` renders a cursor beside the active option. Up and Down wrap around the available choices, and Enter returns the selected value. Harmony tuning starts on Mechanical, preserving the fixed-angle behavior. Step prompts start on their configured default, which is 5 for both colors and neutrals.
 
 When standard input or output is not a TTY, selection falls back to numbered input. Invalid numbers are rejected and prompted again. Direct HEX input accepts `#RGB` and `#RRGGBB`; invalid values are also prompted again.
 
 ## Preview and revision loop
 
-The first preview is generated only after the base color, harmony, and neutral style are known. `src/core/generate.ts` creates the palette, while `src/cli/preview.ts` formats it. True Color blocks are shown only when the output is a TTY and `NO_COLOR` is not set.
+The first preview is generated only after the base color, harmony tuning, and neutral style are known. `src/core/generate.ts` creates the palette, while `src/cli/preview.ts` formats it. The preview names the selected tuning. True Color blocks are shown only when the output is a TTY and `NO_COLOR` is not set.
 
 The review menu changes one decision at a time:
 
 - Changing the base color returns to the base selection method.
-- Changing harmony preserves the base color and neutral style.
+- Changing harmony preserves the base color and neutral style, then asks for harmony tuning again.
 - Changing neutrals preserves the base color and harmony.
 - Continuing moves to the final lightness-step choices.
 
@@ -79,4 +80,7 @@ flowchart LR
   Prompt --> Color[core/color.ts<br/>HEX normalization]
   Generate --> Color
   Generate --> Constants[core/constants.ts<br/>Fixed rules and defaults]
+  Generate --> Tuner[core/perceptual-harmony.ts<br/>Bounded hue tuning]
+  Tuner --> Color
+  Tuner --> Constants
 ```

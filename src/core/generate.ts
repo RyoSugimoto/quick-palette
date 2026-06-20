@@ -6,6 +6,7 @@ import {
   TINTED_NEUTRAL_MAX_CHROMA,
 } from "./constants.js";
 import { hexToOklch, normalizeHex, normalizeHue, oklchToHex } from "./color.js";
+import { tuneHarmonyHues } from "./perceptual-harmony.js";
 import type { PaletteConfig, PaletteResult } from "./types.js";
 
 const ACHROMATIC_CHROMA_THRESHOLD = 0.001;
@@ -18,14 +19,22 @@ export function generatePalette(input: PaletteConfig): PaletteResult {
     COLOR_LIGHTNESS_RANGE.max,
     config.colorSteps,
   );
-  const offsets = HUE_OFFSETS[config.harmony];
+  const mechanicalHues = HUE_OFFSETS[config.harmony].map((offset) => normalizeHue(base.h + offset));
+  const hues = config.harmonyTuning && config.harmonyTuning !== "mechanical"
+    ? tuneHarmonyHues({
+      base,
+      harmony: config.harmony,
+      mechanicalHues,
+      purpose: config.harmonyTuning,
+    })
+    : mechanicalHues;
   const colorChroma = base.c < ACHROMATIC_CHROMA_THRESHOLD
     ? 0
     : Math.max(0.08, Math.min(base.c, 0.22));
-  const colors = offsets.flatMap((offset) => lightness.map((l) => oklchToHex({
+  const colors = hues.flatMap((h) => lightness.map((l) => oklchToHex({
     l,
     c: colorChroma,
-    h: normalizeHue(base.h + offset),
+    h,
   })));
 
   const neutralLightness = interpolate(

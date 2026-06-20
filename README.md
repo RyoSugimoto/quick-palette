@@ -42,6 +42,17 @@ Harmony changes how quiet or varied the palette feels.
 
 When in doubt, start with monochrome or analogous. Complementary and triadic palettes offer more contrast and usually benefit from choosing one color as the main color and using the others as accents.
 
+### Harmony tuning
+
+Harmony tuning optionally makes a small, deterministic adjustment to the secondary harmony hues. The base hue and selected harmony stay intact, and every adjustment is limited to 12 degrees from the fixed harmony angle.
+
+- **Mechanical** is the default and preserves the fixed harmony angles exactly. Use it when compatibility or predictable color-theory angles matter most.
+- **UI** favors restrained accents that stay close to the fixed angles while avoiding colors that lose too much intensity on screen.
+- **Branding** favors vivid, clearly separated secondary accents within the same bounded adjustment range.
+- **Data visualization** favors separation between categorical colors. It is not intended for sequential scales and does not replace color-vision testing, labels, shapes, or patterns.
+
+Monochrome palettes are unchanged by tuning because they have no secondary hue. Tuning is deterministic and runs locally without AI, randomness, or network access.
+
 ### Neutral palette
 
 Neutrals are the supporting colors for backgrounds, text, borders, cards, and disabled states. They give the main colors room to stand out.
@@ -62,7 +73,7 @@ Colors and neutrals both default to 5 steps. Wider harmonies generate a full set
 
 ### Preview and output
 
-The preview is a chance to check the overall direction, not a final commitment. If the palette feels too quiet, too colorful, or disconnected from your project, go back and try a different base color, harmony, or neutral style.
+The preview is a chance to check the overall direction, not a final commitment. It shows the selected harmony tuning. If the palette feels too quiet, too colorful, or disconnected from your project, go back and try a different base color, harmony, tuning, or neutral style. Choosing the harmony again also asks for its tuning again.
 
 The final HEX list is convenient for quickly trying colors in a design tool or stylesheet. The JSON output is useful when you want to bring the complete palette into code, a token-building script, or another tool. Enter a file path to save it, or leave the path blank to print it in the terminal.
 

@@ -7,6 +7,7 @@ export function formatPreview(result: PaletteResult, useColor: boolean): string 
     "Palette preview",
     `Base color: ${result.config.baseColor}`,
     `Color harmony: ${result.config.harmony}`,
+    `Harmony tuning: ${result.config.harmonyTuning ?? "mechanical"}`,
     `Neutral palette: ${result.config.neutralMode}`,
     "",
     "Colors",

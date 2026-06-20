@@ -11,6 +11,7 @@ import type {
   ColorCandidate,
   ColorFamily,
   HarmonyMode,
+  HarmonyTuning,
   Mood,
   NeutralMode,
   StepCount,
@@ -83,6 +84,15 @@ export function promptHarmony(rl: PromptInterface): Promise<HarmonyMode> {
     { label: "Complementary", value: "complementary" },
     { label: "Triadic", value: "triadic" },
   ] as const);
+}
+
+export function promptHarmonyTuning(rl: PromptInterface): Promise<HarmonyTuning> {
+  return select(rl, "Choose harmony tuning:", [
+    { label: "Mechanical (current behavior)", value: "mechanical" },
+    { label: "UI", value: "ui" },
+    { label: "Branding", value: "branding" },
+    { label: "Data visualization", value: "data-visualization" },
+  ] as const, "mechanical");
 }
 
 export function promptNeutralMode(rl: PromptInterface): Promise<NeutralMode> {

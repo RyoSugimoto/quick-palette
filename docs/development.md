@@ -49,4 +49,4 @@ TTY sessions use an arrow-key selector. Up and Down move the active option, Ente
 
 See [UX Flow](./ux-flow.md) for the end-to-end interaction and its implementation boundaries. See [Base Color Selection Development](./base-color-selection.md) before changing base-color choices or routing logic.
 
-The proposed opt-in perceptual harmony feature is documented in [Perceptual Harmony Implementation Plan](./perceptual-harmony-plan.md).
+The opt-in perceptual harmony feature is documented in [Perceptual Harmony Implementation Plan](./perceptual-harmony-plan.md).

@@ -50,6 +50,21 @@ describe("palette generation", () => {
     expect(generatePalette(baseConfig)).toEqual(generatePalette(baseConfig));
   });
 
+  it.each([
+    ["#2563EB", "monochrome", ["#002C92", "#427FFF", "#CEDFFE"]],
+    ["#FF00FF", "triadic", ["#630163", "#CA47C8", "#FFCAFC", "#493802", "#A78208", "#FFDA7C", "#00434B", "#0B99A9", "#8FF0FF"]],
+    ["#CA8A04", "complementary", ["#503402", "#B47B05", "#FFD79F", "#003876", "#4888DB", "#CAE0FE"]],
+    ["#808080", "analogous", ["#3A3A3A", "#878787", "#DEDEDE", "#3A3A3A", "#878787", "#DEDEDE", "#3A3A3A", "#878787", "#DEDEDE"]],
+    ["#DC2626", "analogous", ["#6D023B", "#E43989", "#FFCFDE", "#730207", "#EE3B36", "#FED2CC", "#5A2D01", "#C96C06", "#FED5B7"]],
+  ] as const)("preserves the mechanical fixture for %s %s", (baseColor, harmony, expectedColors) => {
+    const config = { ...baseConfig, baseColor, harmony, colorSteps: 3 as const, neutralSteps: 3 as const };
+    const omitted = generatePalette(config);
+    const explicit = generatePalette({ ...config, harmonyTuning: "mechanical" });
+    expect(omitted.colors).toEqual(expectedColors);
+    expect(explicit.colors).toEqual(omitted.colors);
+    expect(explicit.neutrals).toEqual(omitted.neutrals);
+  });
+
   it.each(STEP_COUNTS)("returns the requested %i lightness steps for every harmony hue", (colorSteps) => {
     const result = generatePalette({ ...baseConfig, colorSteps });
     expect(result.colors).toHaveLength(colorSteps * HUE_OFFSETS[baseConfig.harmony].length);

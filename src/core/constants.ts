@@ -36,3 +36,26 @@ export const TINTED_NEUTRAL_MAX_CHROMA = 0.02;
 export const TINTED_NEUTRAL_CHROMA_RATIO = 0.12;
 export const DEFAULT_COLOR_STEPS = 5;
 export const DEFAULT_NEUTRAL_STEPS = 5;
+
+export const PERCEPTUAL_HUE_SHIFTS = [-12, -8, -4, 0, 4, 8, 12] as const;
+export const PERCEPTUAL_REPRESENTATIVE_LIGHTNESS = 0.625;
+export const PERCEPTUAL_MIN_DISTANCE = 0.08;
+export const PERCEPTUAL_COLLAPSE_DISTANCE = 0.035;
+
+// UI and branding scores are maximized. Data visualization uses a lexicographic
+// comparison so chroma cannot override its minimum-distance priority.
+export const PERCEPTUAL_SCORING_WEIGHTS = {
+  ui: {
+    chromaRetention: 20,
+    minimumDistance: 3,
+    targetDeviation: 0.02,
+    collapse: 10,
+  },
+  branding: {
+    chromaRetention: 30,
+    minimumDistance: 8,
+    baseSeparation: 2,
+    targetDeviation: 0.005,
+    collapse: 12,
+  },
+} as const;

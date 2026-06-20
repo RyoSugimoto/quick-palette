@@ -2,7 +2,7 @@
 
 ## Status
 
-This is a future implementation plan. None of the behavior described here is currently available in the CLI.
+Implemented. The CLI and core behavior described here are available, with Mechanical remaining the compatibility default.
 
 ## Goal
 

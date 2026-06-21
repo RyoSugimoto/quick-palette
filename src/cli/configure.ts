@@ -7,7 +7,7 @@ import type {
   PaletteConfig,
   PaletteResult,
 } from "../core/types.js";
-import { formatHexOutput, writeCssOutput, writeJsonOutput } from "./output.js";
+import { writeCssOutput, writeJsonOutput } from "./output.js";
 import {
   promptBaseColor,
   promptConfigurationAction,
@@ -48,10 +48,7 @@ export async function configurePalette(
 
     while (true) {
       const action = await promptConfigurationAction(prompt);
-      if (action === "accept") {
-        output(`\n${formatHexOutput(result, useColor)}`);
-        return result;
-      }
+      if (action === "done") return result;
       if (action === "edit") {
         config = await editConfig(prompt, config);
         break;
@@ -113,11 +110,11 @@ async function editConfig(
   return { ...config, colorSteps, neutralSteps };
 }
 
-async function exportPalette(
+export async function exportPalette(
   prompt: PromptInterface,
   result: PaletteResult,
-  writeJson: typeof writeJsonOutput,
-  writeCss: typeof writeCssOutput,
+  writeJson: typeof writeJsonOutput = writeJsonOutput,
+  writeCss: typeof writeCssOutput = writeCssOutput,
 ): Promise<"done" | "back"> {
   while (true) {
     const format = await promptExportFormat(prompt);

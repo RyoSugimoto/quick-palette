@@ -1,15 +1,26 @@
 #!/usr/bin/env node
 import { argv, env, stdout } from "node:process";
 import { CliArgumentError, HELP_TEXT, parseCliArgs } from "./args.js";
-import { configurePalette } from "./configure.js";
+import { configurePalette, exportPalette } from "./configure.js";
 import { explorePalettes } from "./explore.js";
 import { runGenerateCommand } from "./generate-command.js";
 import { assertSupportedNodeVersion } from "./node-version.js";
 import {
   createPromptInterface,
   PromptCancelledError,
+  promptAcceptedPaletteAction,
   promptStartupMode,
+  type PromptInterface,
 } from "./prompt.js";
+
+async function finishAcceptedPalette(
+  prompt: PromptInterface,
+  result: Parameters<typeof exportPalette>[1],
+): Promise<void> {
+  while (await promptAcceptedPaletteAction(prompt) === "export") {
+    if (await exportPalette(prompt, result) === "done") return;
+  }
+}
 
 async function run(args: readonly string[]): Promise<void> {
   assertSupportedNodeVersion();
@@ -35,6 +46,9 @@ async function run(args: readonly string[]): Promise<void> {
       if (outcome.action === "edit") {
         await configurePalette(rl, useColor, outcome.config, { editImmediately: true });
       }
+      if (outcome.action === "accept") {
+        await finishAcceptedPalette(rl, outcome.candidate.result);
+      }
       return;
     }
     if (command.name === "configure") {
@@ -45,8 +59,12 @@ async function run(args: readonly string[]): Promise<void> {
     const startupMode = await promptStartupMode(rl);
     if (startupMode === "explore") {
       const outcome = await explorePalettes(rl, useColor);
-      if (outcome.action !== "edit") return;
-      await configurePalette(rl, useColor, outcome.config, { editImmediately: true });
+      if (outcome.action === "edit") {
+        await configurePalette(rl, useColor, outcome.config, { editImmediately: true });
+      }
+      if (outcome.action === "accept") {
+        await finishAcceptedPalette(rl, outcome.candidate.result);
+      }
       return;
     }
     await configurePalette(rl, useColor);

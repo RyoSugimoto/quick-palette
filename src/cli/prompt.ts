@@ -21,7 +21,8 @@ import type {
 export type BaseColorMethod = "hex" | "family" | "mood" | "use-case";
 export type StartupMode = "explore" | "configure";
 export type ExplorationAction = "accept" | "next" | "edit" | "quit";
-export type ConfigurationAction = "accept" | "export" | "edit";
+export type AcceptedPaletteAction = "done" | "export";
+export type ConfigurationAction = "done" | "export" | "edit";
 export type ConfigurationEditAction = "base" | "harmony" | "neutral" | "steps" | "cancel";
 export type ExportFormat = "json" | "css" | "back";
 export type ExportDestination =
@@ -90,6 +91,15 @@ export function promptExplorationAction(rl: PromptInterface): Promise<Exploratio
   ] as const, "accept");
 }
 
+export function promptAcceptedPaletteAction(
+  rl: PromptInterface,
+): Promise<AcceptedPaletteAction> {
+  return select(rl, "Palette accepted. What would you like to do?", [
+    { label: "Done", value: "done" },
+    { label: "Export as JSON or CSS", value: "export" },
+  ] as const, "done");
+}
+
 export async function promptBaseColor(
   rl: PromptInterface,
   currentValue?: string,
@@ -149,10 +159,10 @@ export function promptNeutralMode(rl: PromptInterface, defaultValue?: NeutralMod
 
 export function promptConfigurationAction(rl: PromptInterface): Promise<ConfigurationAction> {
   return select(rl, "Choose an action:", [
-    { label: "Finish and print HEX values", value: "accept" },
+    { label: "Done", value: "done" },
     { label: "Export as JSON or CSS", value: "export" },
     { label: "Change palette settings", value: "edit" },
-  ] as const, "accept");
+  ] as const, "done");
 }
 
 export function promptConfigurationEditAction(

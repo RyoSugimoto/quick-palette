@@ -20,6 +20,9 @@ flowchart TD
   Action -->|Space: next| Next[Advance seed until generated colors change]
   Next --> Candidate
   Action -->|Enter: accept| Hex[Print concise HEX]
+  Hex --> Accepted{Done / Export}
+  Accepted -->|Export| Format[JSON or CSS export flow]
+  Accepted -->|Done| End
   Action -->|e: edit| Field[Open field picker with current values]
   Field --> Configure[Edit selected field]
   Action -->|q: quit| End[Finish without accepted output]
@@ -38,8 +41,8 @@ Fresh configuration asks for base color, harmony, harmony adjustment, and neutra
 ```mermaid
 flowchart TD
   Config[Current config] --> Preview[Generate and show preview]
-  Preview --> Final{Finish / Export / Change settings}
-  Final -->|Finish and print HEX| Hex[Print HEX and finish]
+  Preview --> Final{Done / Export / Change settings}
+  Final -->|Done| End[Finish]
   Final -->|Export as JSON or CSS| Format{JSON or CSS}
   Format --> Destination{Print / Save / Back}
   Destination -->|Print or save| Exported{Done / Export another / Back}
@@ -58,7 +61,7 @@ flowchart TD
   Steps --> Preview
 ```
 
-Finish and print HEX values uses the current result immediately. The normal path keeps both step counts at five and asks no step-count or output questions. Export as JSON or CSS uses the same Print, Save, and Back choices for both formats, then offers Done, Export another format, or Back to palette without reprinting the preview. Change palette settings preselects current values and changes only the selected field group.
+Done finishes without repeating the HEX values already shown in the preview. The normal path keeps both step counts at five and asks no step-count or output questions. Export as JSON or CSS uses the same Print, Save, and Back choices for both formats, then offers Done, Export another format, or Back to palette without reprinting the preview. Change palette settings preselects current values and changes only the selected field group.
 
 ## Non-interactive commands
 
@@ -93,12 +96,12 @@ The implemented paths were checked through automated process tests and timed non
 
 | Journey | First preview | Accept and finish | Internal wall time |
 | --- | ---: | ---: | ---: |
-| No arguments, default exploration | 1 selection | 2 key actions total | 0.11 s |
-| `explore` command | 0 selections | 1 key action total | Not timed |
-| `explore --seed 8f3a21c4` | 0 selections | 1 key action total | 0.12 s |
+| No arguments, default exploration | 1 selection | 3 key actions total | 0.11 s |
+| `explore` command | 0 selections | 2 key actions total | Not timed |
+| `explore --seed 8f3a21c4` | 0 selections | 2 key actions total | 0.12 s |
 | `generate --seed 8f3a21c4` | No preview step | 0 interactive actions | 0.10 s |
 
-Moving between exploration candidates requires one Space key. Accepting requires one Enter key and opens no additional prompts. These counts meet the primary interaction criteria. External first-time-user usability sessions have not yet been conducted.
+Moving between exploration candidates requires one Space key. Accepting requires one Enter key followed by a **Done** or **Export** selection; **Done** is preselected. External first-time-user usability sessions have not yet been conducted.
 
 ## Module responsibilities
 

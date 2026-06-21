@@ -20,7 +20,7 @@ Press Enter to choose **Explore random palettes**. In the exploration view:
 Enter: accept   Space: next   e: edit   q: quit
 ```
 
-Every candidate displays a seed. Accepting prints concise HEX output without asking about step counts or export formats.
+Every candidate displays a seed. Accepting prints concise HEX output, then lets you finish or export the accepted palette as JSON or CSS. Export is optional and the default remains **Done**.
 
 ## Reproduce a palette
 
@@ -72,7 +72,7 @@ pnpm dlx quick-palette configure
 
 The detailed flow selects a base color, harmony, harmony adjustment, and neutral style before showing a preview. Monochrome palettes skip the adjustment question because it would not change their colors. Its final actions are:
 
-- **Finish and print HEX values** prints HEX and exits with the current scales.
+- **Done** exits without repeating the HEX values already shown in the preview.
 - **Export as JSON or CSS** prints or saves a file, then lets you finish, export another format, or return to the palette.
 - **Change palette settings** changes the base color, harmony, neutral style, or step counts while preserving other values.
 

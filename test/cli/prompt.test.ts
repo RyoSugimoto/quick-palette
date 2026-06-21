@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   explorationActionForKey,
+  promptAcceptedPaletteAction,
   promptBaseColor,
   promptConfigurationAction,
   promptExportCompleteAction,
@@ -40,6 +41,25 @@ describe("CLI selection", () => {
     await expect(select(prompt, "Choose:", options, "first")).resolves.toBe("second");
     expect(choose).toHaveBeenCalledWith("Choose:", options, "first");
     expect(prompt.question).not.toHaveBeenCalled();
+  });
+
+  it("offers export after accepting an explored palette", async () => {
+    const choose = vi.fn().mockResolvedValue("export");
+    const prompt: PromptInterface = {
+      question: vi.fn(),
+      choose,
+      close: vi.fn(),
+    };
+
+    await expect(promptAcceptedPaletteAction(prompt)).resolves.toBe("export");
+    expect(choose).toHaveBeenCalledWith(
+      "Palette accepted. What would you like to do?",
+      [
+        { label: "Done", value: "done" },
+        { label: "Export as JSON or CSS", value: "export" },
+      ],
+      "done",
+    );
   });
 });
 
@@ -103,7 +123,7 @@ describe("configuration prompts", () => {
   });
 
   it("describes the result of each final action", async () => {
-    const choose = vi.fn().mockResolvedValue("accept");
+    const choose = vi.fn().mockResolvedValue("done");
     const prompt: PromptInterface = { question: vi.fn(), choose, close: vi.fn() };
 
     await promptConfigurationAction(prompt);
@@ -111,11 +131,11 @@ describe("configuration prompts", () => {
     expect(choose).toHaveBeenCalledWith(
       "Choose an action:",
       [
-        { label: "Finish and print HEX values", value: "accept" },
+        { label: "Done", value: "done" },
         { label: "Export as JSON or CSS", value: "export" },
         { label: "Change palette settings", value: "edit" },
       ],
-      "accept",
+      "done",
     );
   });
 

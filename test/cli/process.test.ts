@@ -16,11 +16,11 @@ afterEach(() => {
   }
 });
 
-function runCli(args: readonly string[]) {
+function runCli(args: readonly string[], input?: string) {
   return spawnSync(
     process.execPath,
     ["--import", "tsx", "src/cli/index.ts", ...args],
-    { cwd: projectRoot, encoding: "utf8", timeout: 10_000 },
+    { cwd: projectRoot, encoding: "utf8", timeout: 10_000, input },
   );
 }
 
@@ -79,6 +79,15 @@ describe("CLI process", () => {
     expect(result.stdout).toBe("");
     expect(result.stderr).toContain("Invalid harmony: square");
     expect(result.stderr).toContain("--help");
+  });
+
+  it("returns to the accepted palette actions after backing out of export", () => {
+    const result = runCli(["explore", "--seed", "8f3a21c4"], "\n2\n3\n\n");
+    const acceptedPrompt = "Palette accepted. What would you like to do?";
+
+    expect(result.status).toBe(0);
+    expect(result.stdout.split(acceptedPrompt)).toHaveLength(3);
+    expect(result.stderr).toBe("");
   });
 
   it.skipIf(!expectAvailable)("handles Ctrl+C through a real TTY", () => {

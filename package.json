@@ -37,6 +37,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepack": "pnpm build",
+    "prepublishOnly": "pnpm test --exclude test/cli/package.test.ts && pnpm typecheck",
     "start": "tsx src/cli/index.ts",
     "test": "vitest run",
     "test:core": "vitest run test/core",

@@ -22,20 +22,6 @@ Enter: accept   Space: next   e: edit   q: quit
 
 Every candidate displays a seed. Accepting prints concise HEX output without asking about step counts or export formats.
 
-## Local development
-
-Requirements:
-
-- Node.js 22 or later
-- pnpm 11 or later
-
-```bash
-pnpm install
-pnpm start
-```
-
-TTY sessions use arrow-key menus. Redirected or piped input uses numbered choices. Set `NO_COLOR` to disable terminal color swatches.
-
 ## Reproduce a palette
 
 Use the seed shown below an exploration preview:
@@ -119,14 +105,3 @@ Adjustments are deterministic and bounded to 12 degrees from each fixed harmony 
 Neutral gray has zero chroma. Base-tinted gray carries a small amount of the base hue into backgrounds, borders, and text colors.
 
 Colors and neutrals default to five lightness steps. Terminal output labels them from `100` to `900` in light-to-dark order, matching CSS output. Wider harmonies display one separately labeled scale per hue. Use **Change palette settings > Step counts** or non-interactive flags when 3, 7, or 9 steps are needed.
-
-## Development
-
-```bash
-pnpm test
-pnpm typecheck
-pnpm build
-pnpm pack --dry-run
-```
-
-See [CLI UX Flow](docs/ux-flow.md) for interaction states and measured action counts, and [Development Guide](docs/development.md) for module boundaries.

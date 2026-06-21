@@ -30,7 +30,6 @@ pnpm start
 pnpm test
 pnpm typecheck
 pnpm build
-pnpm pack --dry-run
 ```
 
 `pnpm start` runs the TypeScript entry point with `tsx`. Pass CLI arguments directly after the script name, for example `pnpm start generate --seed 8f3a21c4`. `pnpm build` compiles the executable to `dist/cli/index.js`; `prepack` runs this build automatically.
@@ -48,8 +47,8 @@ pnpm pack --dry-run
 
 TTY menus use an arrow-key selector. Exploration uses direct Enter, Space, `e`, and `q` actions. Ctrl+C exits with status 130, and raw terminal mode is restored on every exit path. Redirected or piped input falls back to numbered choices. Fully scripted use should use `generate`, which creates no prompt interface and keeps stdout machine-readable.
 
-The npm package and executable are both named `quick-palette`. Before publishing, run the full quality gates and the packed-install smoke test, then inspect `pnpm pack --dry-run` for unexpected files.
-
 See [UX Flow](./ux-flow.md) for the end-to-end interaction and its implementation boundaries. See [Base Color Selection Development](./base-color-selection.md) before changing base-color choices or routing logic.
 
 The opt-in perceptual harmony feature is documented in [Perceptual Harmony Implementation Plan](./perceptual-harmony-plan.md).
+
+For versioning and publication, follow the [Release Guide](./releasing.md).

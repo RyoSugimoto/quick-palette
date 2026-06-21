@@ -6,11 +6,11 @@
   "author": "Ryo Sugimoto",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/RyoSugimoto/color-palette-generator.git"
+    "url": "git+https://github.com/RyoSugimoto/quick-palette.git"
   },
-  "homepage": "https://github.com/RyoSugimoto/color-palette-generator#readme",
+  "homepage": "https://github.com/RyoSugimoto/quick-palette#readme",
   "bugs": {
-    "url": "https://github.com/RyoSugimoto/color-palette-generator/issues"
+    "url": "https://github.com/RyoSugimoto/quick-palette/issues"
   },
   "keywords": [
     "color",

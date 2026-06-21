@@ -88,10 +88,12 @@ Registry propagation can take a short time. Confirm the published version and ex
 
 ```bash
 npm view quick-palette version
-npx quick-palette@X.Y.Z --help
+(cd "$(mktemp -d)" && npx --yes quick-palette@X.Y.Z --help)
 ```
 
 Replace `X.Y.Z` with the released version. Both commands must resolve to the version represented by the GitHub release.
+
+Run the `npx` check outside this repository. When it is run from the `quick-palette` repository, npm may treat the current project as the requested package instead of installing the published version. Because the repository itself does not have a `node_modules/.bin/quick-palette` link, this can fail with `sh: quick-palette: command not found` even when the published package is valid. Changing the npm cache does not resolve this name collision; using a temporary directory as shown above verifies the package in an isolated environment.
 
 ## If publication fails
 

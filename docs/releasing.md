@@ -8,6 +8,7 @@ Release Please owns version changes, the changelog, Git tags, and GitHub release
 
 - Write merge commit or pull request titles using [Conventional Commits](https://www.conventionalcommits.org/).
 - Have permission to merge release pull requests and publish `quick-palette` on npm.
+- Create a GitHub secret named `RELEASE_PLEASE_TOKEN` with a fine-grained PAT or classic PAT that can create pull requests and write to the repository.
 - Use Node.js 22 or later and pnpm 11 or later.
 - Configure npm authentication locally. Run `npm whoami` before publishing; use `npm login` if it fails.
 - Start publication from a clean working tree.
@@ -33,6 +34,8 @@ After changes reach `main`, the `release-please` GitHub Actions workflow opens o
 - The release pull request contains every change intended for this version.
 
 Do not publish from the release pull request branch. Merge it when the version and changelog are ready.
+
+If the workflow reports that GitHub Actions is not permitted to create or approve pull requests, check that `RELEASE_PLEASE_TOKEN` exists and has repository write access. Using `GITHUB_TOKEN` for this workflow is not sufficient in this repository.
 
 ## 3. Confirm the GitHub release
 

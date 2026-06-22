@@ -14,13 +14,13 @@ Or use npm:
 npx quick-palette
 ```
 
-Press Enter to choose **Explore random palettes**. In the exploration view:
+Press Enter to choose **Browse palettes - See a new random palette each time**. In the exploration view:
 
 ```text
-Enter: accept   Space: next   e: edit   q: quit
+Enter: use this palette / Space: show another / e: edit / q: quit
 ```
 
-Every candidate displays a seed. Accepting prints concise HEX output, then lets you finish or export the accepted palette as JSON or CSS. Export is optional and the default remains **Done**.
+Every candidate displays a seed. Accepting prints concise HEX output under **Color scales** and **Neutral scale**, then lets you finish or export the accepted palette as JSON or CSS. Export is optional and the default remains **Finish - Keep this palette and exit**.
 
 ## Reproduce a palette
 
@@ -47,6 +47,9 @@ pnpm dlx quick-palette generate \
   --harmony analogous \
   --tuning ui \
   --neutral tinted \
+  --analogous-spread 45 \
+  --hue-rotation 15 \
+  --chroma-scale 0.75 \
   --color-steps 5 \
   --neutral-steps 5 \
   --format json
@@ -54,7 +57,7 @@ pnpm dlx quick-palette generate \
 
 Supported values:
 
-- Harmony: `monochrome`, `analogous`, `complementary`, `triadic`
+- Harmony: `monochrome`, `analogous`, `complementary`, `triadic`, `tetradic`, `pentadic`
 - Tuning: `mechanical`, `ui`, `branding`, `data-visualization`
 - Neutrals: `neutral`, `tinted`
 - Step counts: `3`, `5`, `7`, `9`
@@ -64,7 +67,7 @@ Run `pnpm dlx quick-palette --help` for the complete command reference. For repe
 
 ## Detailed configuration
 
-Choose **Create a custom palette** at startup, or run:
+Choose **Build your own - Choose colors and settings** at startup, or run:
 
 ```bash
 pnpm dlx quick-palette configure
@@ -72,9 +75,9 @@ pnpm dlx quick-palette configure
 
 The detailed flow selects a base color, harmony, harmony adjustment, and neutral style before showing a preview. Monochrome palettes skip the adjustment question because it would not change their colors. Its final actions are:
 
-- **Done** exits without repeating the HEX values already shown in the preview.
-- **Export as JSON or CSS** prints or saves a file, then lets you finish, export another format, or return to the palette.
-- **Change palette settings** changes the base color, harmony, neutral style, or step counts while preserving other values.
+- **Finish - Keep this palette and exit** exits without repeating the HEX values already shown in the preview.
+- **Export - Save full palette data or CSS** prints or saves a file, then lets you finish, export another format, or return to the palette.
+- **Fine-tune colors - Spacing, hue, and intensity** opens settings while preserving other values.
 
 Press `e` during exploration to open the field picker directly with the current candidate values preselected.
 
@@ -82,26 +85,40 @@ Press `e` during exploration to open the field picker directly with the current 
 
 ### Base color
 
-Enter `#RGB` or `#RRGGBB`, or select a curated color by family, mood, or use case. Random exploration also draws from the deduplicated curated color set.
+Enter `#RGB` or `#RRGGBB`, or select a curated color by family, mood, or use case. The **Muted** mood includes Slate, Dusty Rose, and Clay as lower-chroma starting points. Random exploration also draws from the deduplicated curated color set.
+
+Base color chroma and generated palette chroma are related but not identical. Use the final chroma adjustment when the generated scales should be more subdued.
 
 ### Harmony
 
-- **Monochrome (1 hue + neutrals)** keeps the palette focused.
-- **Analogous (3 neighboring hues + neutrals)** creates cohesive variety.
-- **Complementary (2 opposite hues + neutrals)** creates clear contrast.
-- **Triadic (3 evenly spaced hues + neutrals)** creates colorful balance.
+- **Single color - Focused shades of one hue** keeps the palette focused.
+- **Neighboring colors - Similar, cohesive hues** creates cohesive variety.
+- **Opposite colors - Two strongly contrasting hues** creates clear contrast.
+- **Three-color balance - Evenly spaced, colorful hues** creates colorful balance.
+- **Four-color contrast - Two pairs of opposite hues** creates broad contrast.
+- **Five-color range - The widest variety of hues** creates the widest categorical variety.
 
 ### Harmony adjustment
 
-- **Fixed angles** preserves predictable color-theory angles.
-- **UI** favors restrained screen accents.
-- **Branding** favors vivid, separated accents.
-- **Data visualization** prioritizes categorical separation.
+- **Keep exact spacing - Most predictable** preserves color-theory angles.
+- **Subtle for interfaces - Softer accents** favors restrained screen accents.
+- **Bold for brands - Vivid accents** favors vivid, separated accents.
+- **Distinct for charts - Easier to tell apart** prioritizes categorical separation.
 
 Adjustments are deterministic and bounded to 12 degrees from each fixed harmony angle. Monochrome palettes do not ask for an adjustment because they contain no secondary hue.
 
+### Fine-tune colors
+
+Use **Fine-tune colors - Spacing, hue, and intensity** to refine a generated palette without restarting:
+
+- Analogous hue distance: `15` to `60` degrees; the default is `30`.
+- Hue shift: the CLI accepts `-180` to `180` degrees.
+- Color intensity: `0` to `2`; `1` preserves the original chroma and `0` produces an achromatic color scale.
+
+Hue rotation also rotates base-tinted neutrals. Chroma scale applies to color scales, not neutral scales. Tetradic and Pentadic output more color groups, so high step counts can produce up to 36 and 45 colors respectively.
+
 ### Neutrals and steps
 
-Neutral gray has zero chroma. Base-tinted gray carries a small amount of the base hue into backgrounds, borders, and text colors.
+**Pure gray - No color tint** has zero chroma. **Tinted gray - A hint of the starting color** carries a small amount of the starting hue into backgrounds, borders, and text colors.
 
-Colors and neutrals default to five lightness steps. Terminal output labels them from `100` to `900` in light-to-dark order, matching CSS output. Wider harmonies display one separately labeled scale per hue. Use **Change palette settings > Step counts** or non-interactive flags when 3, 7, or 9 steps are needed.
+Colors and neutrals default to **5 shades - Balanced (default)**. Terminal output labels them from `100` to `900` in light-to-dark order, matching CSS output. Wider harmonies display one separately labeled scale per hue. Use **Step counts** or non-interactive flags when 3, 7, or 9 shades are needed.

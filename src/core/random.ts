@@ -48,6 +48,7 @@ export function generateRandomPaletteConfig(
     neutralMode: constraints.neutralMode ?? randomized.neutralMode,
     colorSteps: constraints.colorSteps ?? DEFAULT_COLOR_STEPS,
     neutralSteps: constraints.neutralSteps ?? DEFAULT_NEUTRAL_STEPS,
+    ...(constraints.adjustments === undefined ? {} : { adjustments: constraints.adjustments }),
   };
 
   return { seed: formatSeed(numericSeed), config };

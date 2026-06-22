@@ -51,6 +51,7 @@ describe("random palette configuration", () => {
       neutralMode: "tinted" as const,
       colorSteps: 3 as const,
       neutralSteps: 9 as const,
+      adjustments: { hueRotation: 15, chromaScale: 0.75 },
     };
 
     for (const seed of [0, 1, 42, 0xffff_ffff]) {
@@ -81,4 +82,9 @@ describe("random palette configuration", () => {
   it("deduplicates curated random base colors", () => {
     expect(new Set(RANDOM_BASE_COLORS).size).toBe(RANDOM_BASE_COLORS.length);
   });
+
+  it.each(["#64748B", "#9F6F7D", "#9A6F58"])(
+    "includes muted candidate %s in random base colors",
+    (hex) => expect(RANDOM_BASE_COLORS).toContain(hex),
+  );
 });

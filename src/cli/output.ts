@@ -10,16 +10,16 @@ export function formatHexOutput(result: PaletteResult, useColor = false): string
   for (let start = 0; start < result.colors.length; start += result.config.colorSteps) {
     const colors = [...result.colors.slice(start, start + result.config.colorSteps)].reverse();
     colorGroups.push([
-      `Color ${colorGroups.length + 1}`,
+      `Scale ${colorGroups.length + 1}`,
       ...formatScale(colors, colorLabels, useColor),
     ].join("\n"));
   }
 
   return [
-    "Colors",
+    "Color scales",
     colorGroups.join("\n\n"),
     "",
-    "Neutrals",
+    "Neutral scale",
     ...formatScale(result.neutrals, neutralLabels, useColor),
   ].join("\n");
 }

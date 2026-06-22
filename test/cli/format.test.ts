@@ -15,17 +15,17 @@ describe("CLI formatting", () => {
   it("formats a color-free English preview", () => {
     const preview = formatPreview(result, false);
     expect(preview).toContain("Palette preview");
-    expect(preview).toContain("Base color: #2563EB");
+    expect(preview).toContain("Starting color: #2563EB");
     expect(preview).not.toContain("\u001B[");
   });
 
   it("formats HEX lists", () => {
     const output = formatHexOutput(result);
-    expect(output).toContain("Colors");
-    expect(output).toContain("Color 1");
-    expect(output).toContain("Color 2");
-    expect(output).toContain("Color 3");
-    expect(output).toContain("Neutrals");
+    expect(output).toContain("Color scales");
+    expect(output).toContain("Scale 1");
+    expect(output).toContain("Scale 2");
+    expect(output).toContain("Scale 3");
+    expect(output).toContain("Neutral scale");
     expect(output).not.toContain("\u001B[");
   });
 

@@ -72,11 +72,24 @@ describe("palette exploration", () => {
   });
 
   it("skips a different config that produces the same palette", async () => {
-    const initial = generateRandomPaletteConfig({ seed: 234 });
-    const duplicate = generateRandomPaletteConfig({ seed: 235 });
+    const shared = {
+      baseColor: "#2563EB",
+      harmony: "monochrome" as const,
+      neutralMode: "neutral" as const,
+      colorSteps: 5 as const,
+      neutralSteps: 5 as const,
+    };
+    const initial = { seed: "000000ea", config: { ...shared, harmonyTuning: "ui" as const } };
+    const duplicate = {
+      seed: "000000eb",
+      config: { ...shared, harmonyTuning: "mechanical" as const },
+    };
+    const next = generateRandomPaletteConfig({ seed: 236 });
+    const configs = [initial, duplicate, next];
+    const duplicateRandomConfig = vi.fn(() => configs.shift() ?? next);
     const outcome = await explorePalettes(prompt, false, {
       initialSeed: 234,
-      randomConfig,
+      randomConfig: duplicateRandomConfig,
       promptAction: actions("next", "accept"),
       output: vi.fn(),
     });
@@ -90,7 +103,7 @@ describe("palette exploration", () => {
     ]);
     expect(outcome.action).toBe("accept");
     if (outcome.action !== "accept") return;
-    expect(outcome.candidate.seed).not.toBe(duplicate.seed);
+    expect(outcome.candidate.seed).toBe(next.seed);
     expect([
       outcome.candidate.result.colors,
       outcome.candidate.result.neutrals,

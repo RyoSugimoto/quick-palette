@@ -13,6 +13,8 @@ The user can choose a base color in four ways:
 
 Every path returns one normalized or predefined HEX string. The rest of the CLI does not need to know how that string was selected.
 
+The `muted` mood provides Slate (`#64748B`), Dusty Rose (`#9F6F7D`), and Clay (`#9A6F58`). These are lower-chroma starting colors selected to remain distinct from the existing curated set. Palette generation still applies its own chroma rules; use `chromaScale` when the generated scales themselves need to be muted.
+
 ```mermaid
 flowchart LR
   Prompt[promptBaseColor] --> Method{Selection method}

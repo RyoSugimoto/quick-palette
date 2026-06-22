@@ -3,6 +3,8 @@ export const HARMONY_MODES = [
   "analogous",
   "complementary",
   "triadic",
+  "tetradic",
+  "pentadic",
 ] as const;
 
 export const NEUTRAL_MODES = ["neutral", "tinted"] as const;
@@ -20,7 +22,7 @@ export type StepCount = (typeof STEP_COUNTS)[number];
 export type HarmonyTuning = (typeof HARMONY_TUNINGS)[number];
 
 export type ColorFamily = "red" | "orange" | "yellow" | "green" | "blue" | "purple";
-export type Mood = "calm" | "energetic" | "elegant" | "playful";
+export type Mood = "calm" | "energetic" | "elegant" | "playful" | "muted";
 export type UseCase = "brand" | "dashboard" | "editorial" | "wellness";
 
 export interface ColorCandidate {
@@ -35,6 +37,13 @@ export interface PaletteConfig {
   readonly colorSteps: StepCount;
   readonly neutralSteps: StepCount;
   readonly harmonyTuning?: HarmonyTuning;
+  readonly adjustments?: PaletteAdjustments;
+}
+
+export interface PaletteAdjustments {
+  readonly analogousSpread?: number;
+  readonly hueRotation?: number;
+  readonly chromaScale?: number;
 }
 
 export interface PaletteResult {

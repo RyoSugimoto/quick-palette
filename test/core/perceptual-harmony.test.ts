@@ -88,6 +88,46 @@ describe("perceptual harmony tuning", () => {
     tuned.forEach((hue) => expect(hue).toBeLessThan(360));
   });
 
+  it.each(["tetradic", "pentadic"] as const)(
+    "tunes large %s harmonies deterministically within the search bound",
+    (harmony) => {
+      const input = tuningInput("#2563EB", harmony, "data-visualization");
+      const tuned = tuneHarmonyHues(input);
+      expect(tuned).toEqual(tuneHarmonyHues(input));
+      tuned.forEach((hue, index) => {
+        expect(hueDistance(hue, input.mechanicalHues[index]!)).toBeLessThanOrEqual(12);
+      });
+    },
+  );
+
+  it.each([
+    ["#2563EB", "tetradic"],
+    ["#2563EB", "pentadic"],
+    ["#DC2626", "pentadic"],
+    ["#9A6F58", "pentadic"],
+  ] as const)(
+    "does not degrade large-harmony distance or retained chroma for %s %s",
+    (baseColor, harmony) => {
+      const input = tuningInput(baseColor, harmony, "data-visualization");
+      const chroma = Math.max(0.08, Math.min(input.base.c, 0.22));
+      const mechanical = mappedMetrics(input.mechanicalHues, chroma);
+      const tuned = mappedMetrics(tuneHarmonyHues(input), chroma);
+
+      expect(tuned.minimumDistance).toBeGreaterThanOrEqual(mechanical.minimumDistance - 1e-12);
+      expect(tuned.retainedChroma).toBeGreaterThanOrEqual(mechanical.retainedChroma - 1e-12);
+    },
+  );
+
+  it("keeps pentadic data-visualization quality within the exhaustive-search threshold", () => {
+    const input = tuningInput("#2563EB", "pentadic", "data-visualization");
+    const chroma = Math.max(0.08, Math.min(input.base.c, 0.22));
+    const exhaustive = exhaustiveBestMetrics(input.mechanicalHues, chroma);
+    const tuned = mappedMetrics(tuneHarmonyHues(input), chroma);
+
+    expect(tuned.minimumDistance).toBeGreaterThanOrEqual(exhaustive.minimumDistance * 0.98);
+    expect(tuned.retainedChroma).toBeGreaterThanOrEqual(exhaustive.retainedChroma * 0.98);
+  });
+
   it("maximizes the minimum mapped distance for data visualization", () => {
     const input = tuningInput("#993300", "triadic", "data-visualization");
     const tuned = tuneHarmonyHues(input);
@@ -127,6 +167,10 @@ function signedShift(hue: number, target: number): number {
 }
 
 function minimumMappedDistance(hues: readonly number[], chroma: number): number {
+  return mappedMetrics(hues, chroma).minimumDistance;
+}
+
+function mappedMetrics(hues: readonly number[], chroma: number) {
   const colors = hues.map((h) => {
     const [l, c, hue] = mapToSrgb({
       l: PERCEPTUAL_REPRESENTATIVE_LIGHTNESS,
@@ -136,7 +180,32 @@ function minimumMappedDistance(hues: readonly number[], chroma: number): number 
     const radians = ((hue ?? 0) * Math.PI) / 180;
     return [l ?? 0, (c ?? 0) * Math.cos(radians), (c ?? 0) * Math.sin(radians)] as const;
   });
-  return Math.min(...colors.flatMap((left, index) => colors.slice(index + 1).map((right) => (
-    Math.hypot(left[0] - right[0], left[1] - right[1], left[2] - right[2])
-  ))));
+  return {
+    minimumDistance: Math.min(...colors.flatMap((left, index) => (
+      colors.slice(index + 1).map((right) => (
+        Math.hypot(left[0] - right[0], left[1] - right[1], left[2] - right[2])
+      ))
+    ))),
+    retainedChroma: colors.reduce((sum, color) => sum + Math.hypot(color[1], color[2]), 0),
+  };
+}
+
+function exhaustiveBestMetrics(mechanicalHues: readonly number[], chroma: number) {
+  let candidates: readonly (readonly number[])[] = [[]];
+  for (let index = 1; index < mechanicalHues.length; index += 1) {
+    candidates = candidates.flatMap((shifts) => (
+      PERCEPTUAL_HUE_SHIFTS.map((shift) => [...shifts, shift])
+    ));
+  }
+
+  return candidates.reduce((best, shifts) => {
+    const hues = mechanicalHues.map((hue, index) => (
+      index === 0 ? hue : normalizeHue(hue + shifts[index - 1]!)
+    ));
+    const metrics = mappedMetrics(hues, chroma);
+    if (metrics.minimumDistance > best.minimumDistance + 1e-12) return metrics;
+    if (Math.abs(metrics.minimumDistance - best.minimumDistance) <= 1e-12
+      && metrics.retainedChroma > best.retainedChroma) return metrics;
+    return best;
+  }, { minimumDistance: Number.NEGATIVE_INFINITY, retainedChroma: Number.NEGATIVE_INFINITY });
 }

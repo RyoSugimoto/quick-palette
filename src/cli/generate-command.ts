@@ -29,13 +29,21 @@ export async function runGenerateCommand(command: GenerateCommand): Promise<void
 }
 
 function resolveConfig(command: GenerateCommand): PaletteConfig {
+  const adjustments = {
+    ...(command.analogousSpread === undefined ? {} : { analogousSpread: command.analogousSpread }),
+    ...(command.hueRotation === undefined ? {} : { hueRotation: command.hueRotation }),
+    ...(command.chromaScale === undefined ? {} : { chromaScale: command.chromaScale }),
+  };
   const constraints: RandomPaletteConstraints = {
     ...(command.baseColor === undefined ? {} : { baseColor: command.baseColor }),
-    ...(command.harmony === undefined ? {} : { harmony: command.harmony }),
+    ...(command.harmony === undefined
+      ? (command.analogousSpread === undefined ? {} : { harmony: "analogous" as const })
+      : { harmony: command.harmony }),
     ...(command.harmonyTuning === undefined ? {} : { harmonyTuning: command.harmonyTuning }),
     ...(command.neutralMode === undefined ? {} : { neutralMode: command.neutralMode }),
     ...(command.colorSteps === undefined ? {} : { colorSteps: command.colorSteps }),
     ...(command.neutralSteps === undefined ? {} : { neutralSteps: command.neutralSteps }),
+    ...(Object.keys(adjustments).length === 0 ? {} : { adjustments }),
   };
   if (command.seed !== undefined) {
     return generateRandomPaletteConfig({ seed: command.seed, constraints }).config;

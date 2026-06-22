@@ -14,6 +14,7 @@ import type {
   HarmonyTuning,
   Mood,
   NeutralMode,
+  PaletteAdjustments,
   StepCount,
   UseCase,
 } from "../core/types.js";
@@ -23,7 +24,7 @@ export type StartupMode = "explore" | "configure";
 export type ExplorationAction = "accept" | "next" | "edit" | "quit";
 export type AcceptedPaletteAction = "done" | "export";
 export type ConfigurationAction = "done" | "export" | "edit";
-export type ConfigurationEditAction = "base" | "harmony" | "neutral" | "steps" | "cancel";
+export type ConfigurationEditAction = "base" | "harmony" | "neutral" | "steps" | "adjustments" | "cancel";
 export type ExportFormat = "json" | "css" | "back";
 export type ExportDestination =
   | { readonly mode: "back" }
@@ -73,21 +74,21 @@ export function createPromptInterface(): PromptInterface {
 
 export function promptStartupMode(rl: PromptInterface): Promise<StartupMode> {
   return select(rl, "How would you like to start?", [
-    { label: "Explore random palettes", value: "explore" },
-    { label: "Create a custom palette", value: "configure" },
+    { label: "Browse palettes - See a new random palette each time", value: "explore" },
+    { label: "Build your own - Choose colors and settings", value: "configure" },
   ] as const, "explore");
 }
 
 export function promptExplorationAction(rl: PromptInterface): Promise<ExplorationAction> {
   if (rl.readExplorationAction) {
-    console.log("\nEnter: accept   Space: next   e: edit   q: quit");
+    console.log("\nEnter: use this palette / Space: show another / e: edit / q: quit");
     return rl.readExplorationAction();
   }
   return select(rl, "What would you like to do?", [
-    { label: "Accept this palette", value: "accept" },
-    { label: "Show the next palette", value: "next" },
-    { label: "Edit this palette", value: "edit" },
-    { label: "Quit", value: "quit" },
+    { label: "Use this palette - Keep these colors", value: "accept" },
+    { label: "Show another - Generate a different palette", value: "next" },
+    { label: "Edit - Fine-tune this palette", value: "edit" },
+    { label: "Quit - Exit without choosing", value: "quit" },
   ] as const, "accept");
 }
 
@@ -95,8 +96,8 @@ export function promptAcceptedPaletteAction(
   rl: PromptInterface,
 ): Promise<AcceptedPaletteAction> {
   return select(rl, "Palette accepted. What would you like to do?", [
-    { label: "Done", value: "done" },
-    { label: "Export as JSON or CSS", value: "export" },
+    { label: "Finish - Keep this palette and exit", value: "done" },
+    { label: "Export - Save full palette data or CSS", value: "export" },
   ] as const, "done");
 }
 
@@ -131,10 +132,12 @@ export async function promptBaseColor(
 
 export function promptHarmony(rl: PromptInterface, defaultValue?: HarmonyMode): Promise<HarmonyMode> {
   return select(rl, "Choose a color harmony:", [
-    { label: "Monochrome (1 hue + neutrals)", value: "monochrome" },
-    { label: "Analogous (3 neighboring hues + neutrals)", value: "analogous" },
-    { label: "Complementary (2 opposite hues + neutrals)", value: "complementary" },
-    { label: "Triadic (3 evenly spaced hues + neutrals)", value: "triadic" },
+    { label: "Single color - Focused shades of one hue", value: "monochrome" },
+    { label: "Neighboring colors - Similar, cohesive hues", value: "analogous" },
+    { label: "Opposite colors - Two strongly contrasting hues", value: "complementary" },
+    { label: "Three-color balance - Evenly spaced, colorful hues", value: "triadic" },
+    { label: "Four-color contrast - Two pairs of opposite hues", value: "tetradic" },
+    { label: "Five-color range - The widest variety of hues", value: "pentadic" },
   ] as const, defaultValue);
 }
 
@@ -143,25 +146,25 @@ export function promptHarmonyTuning(
   defaultValue: HarmonyTuning = "mechanical",
 ): Promise<HarmonyTuning> {
   return select(rl, "How should the harmony colors be adjusted?", [
-    { label: "Fixed angles (predictable)", value: "mechanical" },
-    { label: "UI (restrained accents)", value: "ui" },
-    { label: "Branding (vivid accents)", value: "branding" },
-    { label: "Data visualization (separated colors)", value: "data-visualization" },
+    { label: "Keep exact spacing - Most predictable", value: "mechanical" },
+    { label: "Subtle for interfaces - Softer accents", value: "ui" },
+    { label: "Bold for brands - Vivid accents", value: "branding" },
+    { label: "Distinct for charts - Easier to tell apart", value: "data-visualization" },
   ] as const, defaultValue);
 }
 
 export function promptNeutralMode(rl: PromptInterface, defaultValue?: NeutralMode): Promise<NeutralMode> {
   return select(rl, "Choose a neutral palette:", [
-    { label: "Neutral gray", value: "neutral" },
-    { label: "Base-tinted gray", value: "tinted" },
+    { label: "Pure gray - No color tint", value: "neutral" },
+    { label: "Tinted gray - A hint of the starting color", value: "tinted" },
   ] as const, defaultValue);
 }
 
 export function promptConfigurationAction(rl: PromptInterface): Promise<ConfigurationAction> {
   return select(rl, "Choose an action:", [
-    { label: "Done", value: "done" },
-    { label: "Export as JSON or CSS", value: "export" },
-    { label: "Change palette settings", value: "edit" },
+    { label: "Finish - Keep this palette and exit", value: "done" },
+    { label: "Export - Save full palette data or CSS", value: "export" },
+    { label: "Fine-tune colors - Spacing, hue, and intensity", value: "edit" },
   ] as const, "done");
 }
 
@@ -173,24 +176,54 @@ export function promptConfigurationEditAction(
     { label: "Color harmony", value: "harmony" },
     { label: "Neutral palette", value: "neutral" },
     { label: "Step counts", value: "steps" },
+    { label: "Fine-tune colors - Spacing, hue, and intensity", value: "adjustments" },
     { label: "Cancel editing", value: "cancel" },
   ] as const);
 }
 
+export async function promptPaletteAdjustments(
+  rl: PromptInterface,
+  harmony: HarmonyMode,
+  current: PaletteAdjustments = {},
+): Promise<PaletteAdjustments | undefined> {
+  const analogousSpread = harmony === "analogous"
+    ? await select(rl, "Choose color spacing (smaller is similar; larger adds contrast):", [15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
+      .map((value) => ({ label: `${value} degrees`, value })), current.analogousSpread ?? 30)
+    : undefined;
+  const hueRotation = await select(rl, "Choose a hue shift to move the whole palette's color cast:", [-30, -15, 0, 15, 30]
+    .map((value) => ({ label: `${value > 0 ? "+" : ""}${value} degrees`, value })),
+  presetDefault(current.hueRotation, [-30, -15, 0, 15, 30], 0));
+  const chromaLabels = ["Muted", "Softer", "Original", "Richer", "Vivid"];
+  const chromaScale = await select(rl, "Choose color intensity:", [0.5, 0.75, 1, 1.25, 1.5]
+    .map((value, index) => ({ label: `${chromaLabels[index]} - ${value}x`, value })),
+  presetDefault(current.chromaScale, [0.5, 0.75, 1, 1.25, 1.5], 1));
+
+  const adjustments = {
+    ...(analogousSpread === undefined || analogousSpread === 30 ? {} : { analogousSpread }),
+    ...(hueRotation === 0 ? {} : { hueRotation }),
+    ...(chromaScale === 1 ? {} : { chromaScale }),
+  };
+  return Object.keys(adjustments).length === 0 ? undefined : adjustments;
+}
+
+function presetDefault(value: number | undefined, presets: readonly number[], fallback: number): number {
+  return value !== undefined && presets.includes(value) ? value : fallback;
+}
+
 export function promptExportFormat(rl: PromptInterface): Promise<ExportFormat> {
   return select(rl, "Choose an export format:", [
-    { label: "JSON", value: "json" },
-    { label: "CSS", value: "css" },
+    { label: "JSON - Full palette data and settings", value: "json" },
+    { label: "CSS - Ready-to-use custom properties", value: "css" },
     { label: "Back to palette", value: "back" },
   ] as const);
 }
 
 export function promptStepCount(rl: PromptInterface, label: string, defaultValue: StepCount): Promise<StepCount> {
   return select(rl, `${label} (default: ${defaultValue}):`, [
-    { label: "3 steps", value: 3 },
-    { label: "5 steps", value: 5 },
-    { label: "7 steps", value: 7 },
-    { label: "9 steps", value: 9 },
+    { label: "3 shades - Compact", value: 3 },
+    { label: "5 shades - Balanced (default)", value: 5 },
+    { label: "7 shades - Flexible", value: 7 },
+    { label: "9 shades - Full range", value: 9 },
   ] as const, defaultValue);
 }
 
@@ -216,7 +249,7 @@ export async function promptExportDestination(
 
 export function promptExportCompleteAction(rl: PromptInterface): Promise<ExportCompleteAction> {
   return select(rl, "Export complete. What would you like to do?", [
-    { label: "Done", value: "done" },
+    { label: "Finish - Keep this palette and exit", value: "done" },
     { label: "Export another format", value: "another" },
     { label: "Back to palette", value: "back" },
   ] as const, "done");

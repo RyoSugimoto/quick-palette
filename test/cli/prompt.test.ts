@@ -6,8 +6,12 @@ import {
   promptConfigurationAction,
   promptExportCompleteAction,
   promptExportDestination,
+  promptExportFormat,
   promptExplorationAction,
   promptHarmony,
+  promptNeutralMode,
+  promptPaletteAdjustments,
+  promptStepCount,
   promptStartupMode,
   promptHarmonyTuning,
   select,
@@ -55,8 +59,8 @@ describe("CLI selection", () => {
     expect(choose).toHaveBeenCalledWith(
       "Palette accepted. What would you like to do?",
       [
-        { label: "Done", value: "done" },
-        { label: "Export as JSON or CSS", value: "export" },
+        { label: "Finish - Keep this palette and exit", value: "done" },
+        { label: "Export - Save full palette data or CSS", value: "export" },
       ],
       "done",
     );
@@ -71,7 +75,7 @@ describe("startup and exploration prompts", () => {
     expect(choose).toHaveBeenCalledWith(
       "How would you like to start?",
       expect.arrayContaining([
-        { label: "Create a custom palette", value: "configure" },
+        { label: "Build your own - Choose colors and settings", value: "configure" },
       ]),
       "explore",
     );
@@ -131,9 +135,9 @@ describe("configuration prompts", () => {
     expect(choose).toHaveBeenCalledWith(
       "Choose an action:",
       [
-        { label: "Done", value: "done" },
-        { label: "Export as JSON or CSS", value: "export" },
-        { label: "Change palette settings", value: "edit" },
+        { label: "Finish - Keep this palette and exit", value: "done" },
+        { label: "Export - Save full palette data or CSS", value: "export" },
+        { label: "Fine-tune colors - Spacing, hue, and intensity", value: "edit" },
       ],
       "done",
     );
@@ -148,13 +152,58 @@ describe("configuration prompts", () => {
     expect(choose).toHaveBeenCalledWith(
       "Choose a color harmony:",
       [
-        { label: "Monochrome (1 hue + neutrals)", value: "monochrome" },
-        { label: "Analogous (3 neighboring hues + neutrals)", value: "analogous" },
-        { label: "Complementary (2 opposite hues + neutrals)", value: "complementary" },
-        { label: "Triadic (3 evenly spaced hues + neutrals)", value: "triadic" },
+        { label: "Single color - Focused shades of one hue", value: "monochrome" },
+        { label: "Neighboring colors - Similar, cohesive hues", value: "analogous" },
+        { label: "Opposite colors - Two strongly contrasting hues", value: "complementary" },
+        { label: "Three-color balance - Evenly spaced, colorful hues", value: "triadic" },
+        { label: "Four-color contrast - Two pairs of opposite hues", value: "tetradic" },
+        { label: "Five-color range - The widest variety of hues", value: "pentadic" },
       ],
       undefined,
     );
+  });
+
+  it("keeps descriptive choice labels concise", async () => {
+    const choose = vi.fn().mockResolvedValue("mechanical");
+    const prompt: PromptInterface = { question: vi.fn(), choose, close: vi.fn() };
+    await promptHarmonyTuning(prompt);
+    const labels = choose.mock.calls[0]?.[1].map((option: { label: string }) => option.label) ?? [];
+    expect(labels.every((label: string) => label.length <= 50)).toBe(true);
+  });
+
+  it("explains adjustment effects in questions and preserves values", async () => {
+    const choose = vi.fn()
+      .mockResolvedValueOnce(45)
+      .mockResolvedValueOnce(15)
+      .mockResolvedValueOnce(0.75);
+    const prompt: PromptInterface = { question: vi.fn(), choose, close: vi.fn() };
+
+    await expect(promptPaletteAdjustments(prompt, "analogous")).resolves.toEqual({
+      analogousSpread: 45,
+      hueRotation: 15,
+      chromaScale: 0.75,
+    });
+    expect(choose.mock.calls.map(([question]) => question)).toEqual([
+      "Choose color spacing (smaller is similar; larger adds contrast):",
+      "Choose a hue shift to move the whole palette's color cast:",
+      "Choose color intensity:",
+    ]);
+    expect(choose.mock.calls[2]?.[1]).toContainEqual({ label: "Softer - 0.75x", value: 0.75 });
+  });
+
+  it("uses result-focused neutral, step, and export labels", async () => {
+    const choose = vi.fn().mockResolvedValue("neutral");
+    const prompt: PromptInterface = { question: vi.fn(), choose, close: vi.fn() };
+    await promptNeutralMode(prompt);
+    expect(choose.mock.calls[0]?.[1]).toContainEqual({ label: "Pure gray - No color tint", value: "neutral" });
+
+    choose.mockResolvedValue(5);
+    await promptStepCount(prompt, "Choose color shades", 5);
+    expect(choose.mock.calls[1]?.[1]).toContainEqual({ label: "5 shades - Balanced (default)", value: 5 });
+
+    choose.mockResolvedValue("json");
+    await promptExportFormat(prompt);
+    expect(choose.mock.calls[2]?.[1]).toContainEqual({ label: "JSON - Full palette data and settings", value: "json" });
   });
 });
 

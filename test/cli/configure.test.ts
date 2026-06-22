@@ -58,7 +58,7 @@ describe("detailed configuration flow", () => {
     expect(prompt.choose.mock.calls.map(([question]) => question)).not.toContain(
       expect.stringContaining("number of"),
     );
-    expect(output).toHaveBeenLastCalledWith(expect.stringContaining("Colors"));
+    expect(output).toHaveBeenLastCalledWith(expect.stringContaining("Color scales"));
     expect(output).toHaveBeenCalledTimes(1);
   });
 
@@ -77,6 +77,25 @@ describe("detailed configuration flow", () => {
       ...initialConfig,
       harmony: "triadic",
       harmonyTuning: "branding",
+    });
+  });
+
+  it("removes analogous-only spread when changing harmony", async () => {
+    const prompt = createPrompt(["edit", "harmony", "tetradic", "ui", "done"]);
+    const result = await configurePalette(prompt, false, {
+      ...initialConfig,
+      adjustments: { analogousSpread: 45, hueRotation: 15 },
+    }, { output: vi.fn() });
+
+    expect(result.config.adjustments).toEqual({ hueRotation: 15 });
+  });
+
+  it("edits final adjustments without changing other settings", async () => {
+    const prompt = createPrompt(["edit", "adjustments", 45, 15, 0.75, "done"]);
+    const result = await configurePalette(prompt, false, initialConfig, { output: vi.fn() });
+    expect(result.config).toEqual({
+      ...initialConfig,
+      adjustments: { analogousSpread: 45, hueRotation: 15, chromaScale: 0.75 },
     });
   });
 

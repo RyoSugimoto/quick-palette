@@ -7,8 +7,8 @@ This document describes the implemented interactive and non-interactive journeys
 Running the CLI without a command opens a two-item menu with exploration selected:
 
 ```text
-> Explore random palettes
-  Create a custom palette
+> Browse palettes - See a new random palette each time
+  Build your own - Choose colors and settings
 ```
 
 ```mermaid
@@ -17,12 +17,12 @@ flowchart TD
   Mode -->|Explore, default| Candidate[Generate seeded random config]
   Candidate --> Preview[Show preview, metadata, and seed]
   Preview --> Action{Exploration action}
-  Action -->|Space: next| Next[Advance seed until generated colors change]
+  Action -->|Space: show another| Next[Advance seed until generated colors change]
   Next --> Candidate
-  Action -->|Enter: accept| Hex[Print concise HEX]
-  Hex --> Accepted{Done / Export}
+  Action -->|Enter: use this palette| Hex[Print concise HEX]
+  Hex --> Accepted{Finish / Export}
   Accepted -->|Export| Format[JSON or CSS export flow]
-  Accepted -->|Done| End
+  Accepted -->|Finish| End
   Action -->|e: edit| Field[Open field picker with current values]
   Field --> Configure[Edit selected field]
   Action -->|q: quit| End[Finish without accepted output]
@@ -32,7 +32,7 @@ flowchart TD
 
 Random exploration changes the curated base color, harmony, harmony adjustment, and neutral mode. Color and neutral step counts remain fixed at five. The displayed eight-digit seed reproduces the candidate through `generate --seed` within the same Quick Palette version; generated JSON output should be retained when exact colors are required across versions.
 
-TTY exploration reads a single key and restores raw mode after success, cancellation, or error. Non-TTY input uses a numbered `Accept / Next / Edit / Quit` menu and never waits for raw key events.
+TTY exploration reads a single key and restores raw mode after success, cancellation, or error. It displays `Enter: use this palette / Space: show another / e: edit / q: quit`. Non-TTY input uses a numbered `Use this palette / Show another / Edit / Quit` menu and never waits for raw key events.
 
 ## Detailed configuration
 
@@ -41,16 +41,16 @@ Fresh configuration asks for base color, harmony, harmony adjustment, and neutra
 ```mermaid
 flowchart TD
   Config[Current config] --> Preview[Generate and show preview]
-  Preview --> Final{Done / Export / Change settings}
-  Final -->|Done| End[Finish]
-  Final -->|Export as JSON or CSS| Format{JSON or CSS}
+  Preview --> Final{Finish / Export / Fine-tune colors}
+  Final -->|Finish| End[Finish]
+  Final -->|Export| Format{JSON or CSS}
   Format --> Destination{Print / Save / Back}
-  Destination -->|Print or save| Exported{Done / Export another / Back}
+  Destination -->|Print or save| Exported{Finish / Export another / Back}
   Destination -->|Back| Format
-  Exported -->|Done| End[Finish]
+  Exported -->|Finish| End[Finish]
   Exported -->|Export another| Format
   Exported -->|Back| Final
-  Final -->|Change palette settings| Field{Field to edit}
+  Final -->|Fine-tune colors| Field{Field to edit}
   Field --> Base[Base color]
   Field --> Harmony[Harmony and adjustment]
   Field --> Neutral[Neutral mode]
@@ -61,7 +61,7 @@ flowchart TD
   Steps --> Preview
 ```
 
-Done finishes without repeating the HEX values already shown in the preview. The normal path keeps both step counts at five and asks no step-count or output questions. Export as JSON or CSS uses the same Print, Save, and Back choices for both formats, then offers Done, Export another format, or Back to palette without reprinting the preview. Change palette settings preselects current values and changes only the selected field group.
+Finish keeps the palette and exits without repeating the HEX values already shown in the preview. The normal path keeps both step counts at five and asks no step-count or output questions. JSON is described as full palette data and settings; CSS as ready-to-use custom properties. Both use the same Print, Save, and Back choices, then offer Finish, Export another format, or Back to palette without reprinting the preview. Fine-tune colors preselects current values and changes only the selected field group.
 
 ## Non-interactive commands
 
@@ -85,7 +85,10 @@ flowchart LR
 - TTY menus use Up and Down with wraparound and Enter to select.
 - Exploration uses Enter, Space, `e`, and `q` as direct actions.
 - Ctrl+C prints `Cancelled.`, exits with status 130, and restores raw terminal mode.
-- Terminal palettes use separate harmony groups and `100` through `900` labels in light-to-dark order.
+- Terminal palettes use **Color scales**, **Scale 1**, and **Neutral scale** headings with `100` through `900` labels in light-to-dark order.
+- Tetradic and Pentadic harmonies produce four and five color groups respectively.
+- Fine-tune colors is available from the edit menu without adding prompts before the first preview.
+- Analogous distance, hue rotation, and chroma scale are validated at both CLI and core boundaries.
 - Non-TTY menus use numbered input and reject invalid selections.
 - True Color swatches appear only for TTY stdout when `NO_COLOR` is unset.
 - Machine-readable generation writes content to stdout or a selected file, and errors to stderr.
@@ -101,7 +104,7 @@ The implemented paths were checked through automated process tests and timed non
 | `explore --seed 8f3a21c4` | 0 selections | 2 key actions total | 0.12 s |
 | `generate --seed 8f3a21c4` | No preview step | 0 interactive actions | 0.10 s |
 
-Moving between exploration candidates requires one Space key. Accepting requires one Enter key followed by a **Done** or **Export** selection; **Done** is preselected. External first-time-user usability sessions have not yet been conducted.
+Moving between exploration candidates requires one Space key. Accepting requires one Enter key followed by a **Finish** or **Export** selection; **Finish - Keep this palette and exit** is preselected. External first-time-user usability sessions have not yet been conducted.
 
 ## Module responsibilities
 

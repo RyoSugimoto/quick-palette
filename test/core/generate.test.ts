@@ -13,7 +13,7 @@ import {
   HUE_OFFSETS,
   TINTED_NEUTRAL_MAX_CHROMA,
 } from "../../src/core/constants.js";
-import { generatePalette } from "../../src/core/generate.js";
+import { generatePalette, InvalidPaletteAdjustmentError } from "../../src/core/generate.js";
 import { HARMONY_MODES, NEUTRAL_MODES, STEP_COUNTS, type PaletteConfig } from "../../src/core/types.js";
 
 const baseConfig: PaletteConfig = {
@@ -92,6 +92,65 @@ describe("palette generation", () => {
       const actualHue = hexToOklch(representative as string).h;
       expect(hueDistance(actualHue, normalizeHue(baseHue + offset))).toBeLessThan(2);
     });
+  });
+
+  it("keeps existing colors when adjustment defaults are explicit", () => {
+    const existing = generatePalette(baseConfig);
+    const adjusted = generatePalette({
+      ...baseConfig,
+      adjustments: { analogousSpread: 30, hueRotation: 0, chromaScale: 1 },
+    });
+    expect(adjusted.colors).toEqual(existing.colors);
+    expect(adjusted.neutrals).toEqual(existing.neutrals);
+  });
+
+  it("adjusts analogous spread symmetrically", () => {
+    const result = generatePalette({
+      ...baseConfig,
+      harmonyTuning: "mechanical",
+      colorSteps: 3,
+      adjustments: { analogousSpread: 45 },
+    });
+    const baseHue = hexToOklch(baseConfig.baseColor).h;
+    [-45, 0, 45].forEach((offset, index) => {
+      const hue = hexToOklch(result.colors[(index * 3) + 1]!).h;
+      expect(hueDistance(hue, normalizeHue(baseHue + offset))).toBeLessThan(2);
+    });
+  });
+
+  it("rotates generated colors and can remove their chroma", () => {
+    const rotated = generatePalette({
+      ...baseConfig,
+      harmony: "monochrome",
+      colorSteps: 3,
+      adjustments: { hueRotation: 30 },
+    });
+    const actualHue = hexToOklch(rotated.colors[1]!).h;
+    expect(hueDistance(actualHue, hexToOklch(baseConfig.baseColor).h + 30)).toBeLessThan(2);
+
+    const achromatic = generatePalette({
+      ...baseConfig,
+      harmony: "monochrome",
+      adjustments: { chromaScale: 0 },
+    });
+    achromatic.colors.forEach((hex) => expect(hexToOklch(hex).c).toBeLessThan(0.005));
+  });
+
+  it.each([
+    { analogousSpread: 14 },
+    { hueRotation: Number.NaN },
+    { chromaScale: 2.1 },
+  ])("rejects invalid adjustment $analogousSpread$hueRotation$chromaScale", (adjustments) => {
+    expect(() => generatePalette({ ...baseConfig, adjustments }))
+      .toThrow(InvalidPaletteAdjustmentError);
+  });
+
+  it("rejects analogous spread for another harmony", () => {
+    expect(() => generatePalette({
+      ...baseConfig,
+      harmony: "triadic",
+      adjustments: { analogousSpread: 30 },
+    })).toThrow(InvalidPaletteAdjustmentError);
   });
 
   it.each(["#000000", "#808080", "#FFFFFF"])(

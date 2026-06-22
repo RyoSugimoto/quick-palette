@@ -23,6 +23,11 @@ export const MOOD_CANDIDATES: Readonly<Record<Mood, readonly ColorCandidate[]>> 
   energetic: [{ name: "Bright Orange", hex: "#F97316" }, { name: "Hot Pink", hex: "#DB2777" }],
   elegant: [{ name: "Deep Navy", hex: "#1E3A8A" }, { name: "Burgundy", hex: "#881337" }],
   playful: [{ name: "Candy Purple", hex: "#A855F7" }, { name: "Fresh Green", hex: "#22C55E" }],
+  muted: [
+    { name: "Slate", hex: "#64748B" },
+    { name: "Dusty Rose", hex: "#9F6F7D" },
+    { name: "Clay", hex: "#9A6F58" },
+  ],
 };
 
 export const USE_CASE_CANDIDATES: Readonly<Record<UseCase, readonly ColorCandidate[]>> = {
@@ -37,7 +42,19 @@ export const HUE_OFFSETS: Readonly<Record<HarmonyMode, readonly number[]>> = {
   analogous: [-30, 0, 30],
   complementary: [0, 180],
   triadic: [0, 120, 240],
+  tetradic: [0, 60, 180, 240],
+  pentadic: [0, 72, 144, 216, 288],
 };
+
+export const DEFAULT_ANALOGOUS_SPREAD = 30;
+export const MIN_ANALOGOUS_SPREAD = 15;
+export const MAX_ANALOGOUS_SPREAD = 60;
+export const DEFAULT_HUE_ROTATION = 0;
+export const MIN_HUE_ROTATION = -180;
+export const MAX_HUE_ROTATION = 180;
+export const DEFAULT_CHROMA_SCALE = 1;
+export const MIN_CHROMA_SCALE = 0;
+export const MAX_CHROMA_SCALE = 2;
 
 export const COLOR_LIGHTNESS_RANGE = { min: 0.35, max: 0.9 } as const;
 export const NEUTRAL_LIGHTNESS_RANGE = { min: 0.18, max: 0.98 } as const;

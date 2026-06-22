@@ -18,6 +18,7 @@ import {
   promptHarmony,
   promptHarmonyTuning,
   promptNeutralMode,
+  promptPaletteAdjustments,
   promptStepCount,
   type PromptInterface,
 } from "./prompt.js";
@@ -90,11 +91,24 @@ async function editConfig(
     const harmonyTuning: HarmonyTuning = harmony === "monochrome"
       ? "mechanical"
       : await promptHarmonyTuning(prompt, config.harmonyTuning ?? "mechanical");
-    return { ...config, harmony, harmonyTuning };
+    const adjustments = adjustmentsForHarmony(config, harmony);
+    const { adjustments: _currentAdjustments, ...configWithoutAdjustments } = config;
+    return {
+      ...configWithoutAdjustments,
+      harmony,
+      harmonyTuning,
+      ...(adjustments === undefined ? {} : { adjustments }),
+    };
   }
   if (action === "neutral") {
     const neutralMode: NeutralMode = await promptNeutralMode(prompt, config.neutralMode);
     return { ...config, neutralMode };
+  }
+  if (action === "adjustments") {
+    const adjustments = await promptPaletteAdjustments(prompt, config.harmony, config.adjustments);
+    return adjustments === undefined
+      ? withoutAdjustments(config)
+      : { ...config, adjustments };
   }
 
   const colorSteps = await promptStepCount(
@@ -108,6 +122,22 @@ async function editConfig(
     config.neutralSteps,
   );
   return { ...config, colorSteps, neutralSteps };
+}
+
+function adjustmentsForHarmony(
+  config: PaletteConfig,
+  harmony: HarmonyMode,
+): PaletteConfig["adjustments"] {
+  if (harmony === "analogous" || config.adjustments?.analogousSpread === undefined) {
+    return config.adjustments;
+  }
+  const { analogousSpread: _spread, ...remaining } = config.adjustments;
+  return Object.keys(remaining).length === 0 ? undefined : remaining;
+}
+
+function withoutAdjustments(config: PaletteConfig): PaletteConfig {
+  const { adjustments: _adjustments, ...rest } = config;
+  return rest;
 }
 
 export async function exportPalette(

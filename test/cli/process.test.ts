@@ -43,8 +43,32 @@ describe("CLI process", () => {
     expect(result.stderr).toBe("");
   });
 
+  it("applies final adjustments without changing unpinned seeded fields", () => {
+    const seed = "0000007b";
+    const original = generateRandomPaletteConfig({ seed });
+    const adjustments = { analogousSpread: 45, hueRotation: 30, chromaScale: 0 };
+    const result = runCli([
+      "generate", "--seed", seed,
+      "--harmony", "analogous",
+      "--analogous-spread", "45",
+      "--hue-rotation", "30",
+      "--chroma-scale", "0",
+      "--format", "json",
+    ]);
+
+    expect(result.status).toBe(0);
+    const output = JSON.parse(result.stdout);
+    expect(output.config).toEqual({
+      ...original.config,
+      harmony: "analogous",
+      adjustments,
+    });
+    expect(new Set(output.colors)).toHaveLength(output.config.colorSteps);
+    expect(result.stderr).toBe("");
+  });
+
   it.each([
-    ["hex", /^Colors\n/],
+    ["hex", /^Color scales\n/],
     ["json", /^\{\n/],
     ["css", /^:root \{\n/],
   ] as const)("writes prompt-free %s output to stdout", (format, pattern) => {
@@ -73,11 +97,17 @@ describe("CLI process", () => {
     expect(() => JSON.parse(readFileSync(outputPath, "utf8"))).not.toThrow();
   });
 
-  it("reports invalid arguments on stderr with a non-zero status", () => {
-    const result = runCli(["generate", "--harmony", "square"]);
+  it.each([
+    [["generate", "--harmony", "square"], 'Unknown harmony "square"', "Example: --harmony analogous"],
+    [["generate", "--format"], "Missing value for --format", "Example: --format hex"],
+    [["generate", "--hue-rotation", "181"], 'Invalid hue rotation "181"', "Example: --hue-rotation 15"],
+    [["generate", "--harmony", "triadic", "--analogous-spread", "30"], "only works with --harmony analogous", "Example: --harmony analogous"],
+  ] as const)("reports actionable argument errors for %j", (args, cause, example) => {
+    const result = runCli(args);
     expect(result.status).toBe(1);
     expect(result.stdout).toBe("");
-    expect(result.stderr).toContain("Invalid harmony: square");
+    expect(result.stderr).toContain(cause);
+    expect(result.stderr).toContain(example);
     expect(result.stderr).toContain("--help");
   });
 

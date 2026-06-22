@@ -15,6 +15,7 @@ export interface TuneHarmonyInput {
   readonly harmony: HarmonyMode;
   readonly mechanicalHues: readonly number[];
   readonly purpose: PerceptualPurpose;
+  readonly chroma?: number;
 }
 
 interface CandidateMetrics {
@@ -43,9 +44,19 @@ export function tuneHarmonyHues(input: TuneHarmonyInput): readonly number[] {
   const adjustableIndexes = mechanicalHues
     .map((_, index) => index)
     .filter((index) => index !== baseIndex);
-  const chroma = input.base.c < ACHROMATIC_CHROMA_THRESHOLD
+  const chroma = input.chroma ?? (input.base.c < ACHROMATIC_CHROMA_THRESHOLD
     ? 0
-    : Math.max(0.08, Math.min(input.base.c, 0.22));
+    : Math.max(0.08, Math.min(input.base.c, 0.22)));
+
+  if (adjustableIndexes.length > 2) {
+    return tuneLargeHarmony(
+      mechanicalHues,
+      adjustableIndexes,
+      baseIndex,
+      chroma,
+      input.purpose,
+    );
+  }
 
   let best = mechanicalHues;
   let bestScore = Number.NEGATIVE_INFINITY;
@@ -78,6 +89,53 @@ export function tuneHarmonyHues(input: TuneHarmonyInput): readonly number[] {
   }
 
   return best;
+}
+
+function tuneLargeHarmony(
+  mechanicalHues: readonly number[],
+  adjustableIndexes: readonly number[],
+  baseIndex: number,
+  chroma: number,
+  purpose: PerceptualPurpose,
+): readonly number[] {
+  let current = [...mechanicalHues];
+
+  // Coordinate search keeps large harmonies responsive while preserving the
+  // same bounded candidate set and deterministic tie-breaking as full search.
+  for (let pass = 0; pass < 3; pass += 1) {
+    let changed = false;
+    for (const index of adjustableIndexes) {
+      let best = current;
+      let bestMetrics = measureCandidate(best, mechanicalHues, baseIndex, chroma);
+      for (const shift of PERCEPTUAL_HUE_SHIFTS) {
+        const candidate = [...current];
+        candidate[index] = normalizeHue(mechanicalHues[index]! + shift);
+        const metrics = measureCandidate(candidate, mechanicalHues, baseIndex, chroma);
+        if (isBetterCandidate(purpose, metrics, bestMetrics)) {
+          best = candidate;
+          bestMetrics = metrics;
+        }
+      }
+      if (best[index] !== current[index]) changed = true;
+      current = best;
+    }
+    if (!changed) break;
+  }
+  return current;
+}
+
+function isBetterCandidate(
+  purpose: PerceptualPurpose,
+  candidate: CandidateMetrics,
+  current: CandidateMetrics,
+): boolean {
+  if (purpose === "data-visualization") {
+    return isBetterDataVisualizationCandidate(candidate, current);
+  }
+  const scoreDifference = scoreCandidate(purpose, candidate) - scoreCandidate(purpose, current);
+  return scoreDifference > SCORE_EPSILON
+    || (Math.abs(scoreDifference) <= SCORE_EPSILON
+      && candidate.targetDeviation < current.targetDeviation);
 }
 
 function generateShiftSets(count: number): readonly (readonly number[])[] {

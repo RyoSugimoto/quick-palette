@@ -41,6 +41,7 @@
     "start": "tsx src/cli/index.ts",
     "test": "vitest run",
     "test:core": "vitest run test/core",
+    "benchmark:tuning": "pnpm build && node dist/benchmark/perceptual-harmony.js",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

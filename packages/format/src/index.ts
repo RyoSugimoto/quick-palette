@@ -1,4 +1,4 @@
-import type { PaletteResult, StepCount } from "./types.js";
+import type { PaletteResult, StepCount } from "@quick-palette/core";
 
 export const STEP_LABELS: Readonly<Record<StepCount, readonly number[]>> = {
   3: [100, 500, 900],

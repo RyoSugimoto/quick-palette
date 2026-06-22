@@ -13,7 +13,7 @@ export function useTheme(): readonly [ThemePreference, (theme: ThemePreference) 
     apply();
     if (preference === "system") media.addEventListener("change", apply);
     try {
-      localStorage.setItem(STORAGE_KEY, preference);
+    window.localStorage.setItem(STORAGE_KEY, preference);
     } catch {
       // Theme persistence is optional when storage is unavailable.
     }
@@ -25,7 +25,7 @@ export function useTheme(): readonly [ThemePreference, (theme: ThemePreference) 
 
 function readPreference(): ThemePreference {
   try {
-    const value = localStorage.getItem(STORAGE_KEY);
+    const value = window.localStorage.getItem(STORAGE_KEY);
     if (value === "light" || value === "dark" || value === "system") return value;
   } catch {
     // Fall back to the system setting when storage is unavailable.

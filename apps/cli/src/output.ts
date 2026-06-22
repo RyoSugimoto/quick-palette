@@ -1,9 +1,9 @@
 import { writeFile } from "node:fs/promises";
-import { formatCssOutput, formatJsonOutput, STEP_LABELS } from "../core/format.js";
-import type { PaletteResult } from "../core/types.js";
+import { formatCssOutput, formatJsonOutput, STEP_LABELS } from "@quick-palette/format";
+import type { PaletteResult } from "@quick-palette/core";
 import { formatColorSwatch } from "./terminal-color.js";
 
-export { formatCssOutput, formatJsonOutput } from "../core/format.js";
+export { formatCssOutput, formatJsonOutput } from "@quick-palette/format";
 
 export function formatHexOutput(result: PaletteResult, useColor = false): string {
   const colorLabels = STEP_LABELS[result.config.colorSteps];

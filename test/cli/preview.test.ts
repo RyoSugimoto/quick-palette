@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { formatPreview } from "../../src/cli/preview.js";
-import { generatePalette } from "../../src/core/generate.js";
+import { formatPreview } from "../../apps/cli/src/preview.js";
+import { generatePalette } from "../../packages/core/src/generate.js";
 
 describe("palette preview", () => {
   it("shows human-readable palette metadata", () => {

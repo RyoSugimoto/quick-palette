@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { assertSupportedNodeVersion } from "../../src/cli/node-version.js";
+import { assertSupportedNodeVersion } from "../../apps/cli/src/node-version.js";
 
 describe("Node.js version requirement", () => {
   it.each(["22.0.0", "24.1.0", "26.3.0"])("accepts supported version %s", (version) => {

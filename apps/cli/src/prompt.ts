@@ -1,12 +1,12 @@
 import { createInterface } from "node:readline/promises";
 import { clearScreenDown, cursorTo, emitKeypressEvents, moveCursor } from "node:readline";
 import { stdin, stdout } from "node:process";
-import { normalizeHex } from "../core/color.js";
+import { normalizeHex } from "@quick-palette/core";
 import {
   COLOR_FAMILY_CANDIDATES,
   MOOD_CANDIDATES,
   USE_CASE_CANDIDATES,
-} from "../core/constants.js";
+} from "@quick-palette/core";
 import type {
   ColorCandidate,
   ColorFamily,
@@ -17,7 +17,7 @@ import type {
   PaletteAdjustments,
   StepCount,
   UseCase,
-} from "../core/types.js";
+} from "@quick-palette/core";
 
 export type BaseColorMethod = "hex" | "family" | "mood" | "use-case";
 export type StartupMode = "explore" | "configure";

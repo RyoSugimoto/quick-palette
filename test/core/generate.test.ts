@@ -6,15 +6,15 @@ import {
   isValidHex,
   normalizeHex,
   normalizeHue,
-} from "../../src/core/color.js";
+} from "../../packages/core/src/color.js";
 import {
   DEFAULT_COLOR_STEPS,
   DEFAULT_NEUTRAL_STEPS,
   HUE_OFFSETS,
   TINTED_NEUTRAL_MAX_CHROMA,
-} from "../../src/core/constants.js";
-import { generatePalette, InvalidPaletteAdjustmentError } from "../../src/core/generate.js";
-import { HARMONY_MODES, NEUTRAL_MODES, STEP_COUNTS, type PaletteConfig } from "../../src/core/types.js";
+} from "../../packages/core/src/constants.js";
+import { generatePalette, InvalidPaletteAdjustmentError } from "../../packages/core/src/generate.js";
+import { HARMONY_MODES, NEUTRAL_MODES, STEP_COUNTS, type PaletteConfig } from "../../packages/core/src/types.js";
 
 const baseConfig: PaletteConfig = {
   baseColor: "#2563EB",

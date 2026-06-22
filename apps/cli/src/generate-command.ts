@@ -1,6 +1,6 @@
 import { writeFile } from "node:fs/promises";
-import { resolvePaletteConfig } from "../core/config.js";
-import { generatePalette } from "../core/generate.js";
+import { resolvePaletteConfig } from "@quick-palette/core";
+import { generatePalette } from "@quick-palette/core";
 import type { CliCommand, OutputFormat } from "./args.js";
 import { formatCssOutput, formatHexOutput, formatJsonOutput } from "./output.js";
 

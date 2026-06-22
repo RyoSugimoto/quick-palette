@@ -1,0 +1,51 @@
+{
+  "name": "quick-palette",
+  "version": "0.3.0",
+  "description": "Explore and generate reproducible OKLCH-based color palettes from the command line.",
+  "license": "MIT",
+  "author": "Ryo Sugimoto",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RyoSugimoto/quick-palette.git"
+  },
+  "homepage": "https://github.com/RyoSugimoto/quick-palette#readme",
+  "bugs": {
+    "url": "https://github.com/RyoSugimoto/quick-palette/issues"
+  },
+  "keywords": [
+    "color",
+    "palette",
+    "oklch",
+    "cli"
+  ],
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "bin": {
+    "quick-palette": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --target=node22 --outfile=dist/index.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "tsx src/index.ts",
+    "prepack": "pnpm build"
+  },
+  "devDependencies": {
+    "@quick-palette/core": "workspace:*",
+    "@quick-palette/format": "workspace:*",
+    "@types/node": "^25.9.3",
+    "esbuild": "^0.27.3",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}

@@ -3,8 +3,8 @@ import {
   formatCssOutput,
   formatJsonOutput,
   formatPlainHexOutput,
-} from "../../../../src/core/format.js";
-import type { PaletteResult } from "../../../../src/core/types.js";
+} from "@quick-palette/format";
+import type { PaletteResult } from "@quick-palette/core";
 import { copyText, downloadText } from "../export.js";
 
 type ExportFormat = "hex" | "json" | "css";
@@ -26,8 +26,12 @@ export function ExportPanel({ result }: ExportPanelProps) {
     if (format === "hex") return;
     const filename = format === "json" ? "quick-palette.json" : "quick-palette.css";
     const type = format === "json" ? "application/json;charset=utf-8" : "text/css;charset=utf-8";
-    downloadText(filename, `${content.trimEnd()}\n`, type);
-    setStatus(`Downloaded ${filename}.`);
+    try {
+      downloadText(filename, `${content.trimEnd()}\n`, type);
+      setStatus(`Downloaded ${filename}.`);
+    } catch {
+      setStatus("Could not create the download. Select the export text and save it manually.");
+    }
   };
 
   const copy = async () => {

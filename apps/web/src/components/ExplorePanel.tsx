@@ -2,12 +2,13 @@ import { useEffect, useState } from "preact/hooks";
 
 interface ExplorePanelProps {
   readonly seed: string;
+  readonly seedError?: string | undefined;
   readonly onNext: () => void;
   readonly onSeed: (seed: string) => void;
   readonly onEdit: () => void;
 }
 
-export function ExplorePanel({ seed, onNext, onSeed, onEdit }: ExplorePanelProps) {
+export function ExplorePanel({ seed, seedError, onNext, onSeed, onEdit }: ExplorePanelProps) {
   const [draftSeed, setDraftSeed] = useState(seed);
 
   useEffect(() => setDraftSeed(seed), [seed]);
@@ -37,13 +38,16 @@ export function ExplorePanel({ seed, onNext, onSeed, onEdit }: ExplorePanelProps
           <input
             id="seed"
             value={draftSeed}
+            aria-invalid={Boolean(seedError)}
+            aria-describedby={seedError ? "seed-error" : "seed-note"}
             onInput={(event) => setDraftSeed(event.currentTarget.value)}
             autocomplete="off"
             spellcheck={false}
           />
           <button type="submit">Load seed</button>
         </div>
-        <p class="field-note">Current normalized seed: <code>{seed}</code></p>
+        {seedError && <p class="field-error" id="seed-error">{seedError}</p>}
+        <p class="field-note" id="seed-note">Current normalized seed: <code>{seed}</code></p>
       </form>
 
       <a class="text-link" href="#palette-preview">View palette</a>

@@ -1,0 +1,16 @@
+{
+  "name": "@quick-palette/format",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@quick-palette/core": "workspace:*",
+    "typescript": "^6.0.3"
+  }
+}

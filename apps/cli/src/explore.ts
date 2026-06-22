@@ -1,13 +1,13 @@
-import { generatePalette } from "../core/generate.js";
-import { candidateFromRandom, nextPaletteCandidateWith } from "../core/explore.js";
-import { generateRandomPaletteConfig } from "../core/random.js";
+import { generatePalette } from "@quick-palette/core";
+import { candidateFromRandom, nextPaletteCandidateWith } from "@quick-palette/core";
+import { generateRandomPaletteConfig } from "@quick-palette/core";
 import type {
   PaletteConfig,
   PaletteResult,
   RandomPaletteConfigOptions,
   RandomPaletteConfigResult,
   RandomSeed,
-} from "../core/types.js";
+} from "@quick-palette/core";
 import { formatHexOutput } from "./output.js";
 import {
   promptExplorationAction,

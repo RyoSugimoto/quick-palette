@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { generatePalette } from "../../src/core/generate.js";
-import { formatCssOutput, formatHexOutput, formatJsonOutput } from "../../src/cli/output.js";
-import { formatPreview } from "../../src/cli/preview.js";
+import { generatePalette } from "../../packages/core/src/generate.js";
+import { formatCssOutput, formatHexOutput, formatJsonOutput } from "../../apps/cli/src/output.js";
+import { formatPreview } from "../../apps/cli/src/preview.js";
 
 const result = generatePalette({
   baseColor: "#2563EB",

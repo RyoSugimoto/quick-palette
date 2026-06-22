@@ -1,5 +1,5 @@
-import { STEP_LABELS } from "../../../../src/core/format.js";
-import type { PaletteResult } from "../../../../src/core/types.js";
+import { STEP_LABELS } from "@quick-palette/format";
+import type { PaletteResult } from "@quick-palette/core";
 
 interface PalettePreviewProps {
   readonly result: PaletteResult;

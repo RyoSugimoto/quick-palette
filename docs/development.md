@@ -2,20 +2,23 @@
 
 ## Overview
 
-Quick Palette is a TypeScript CLI. Palette calculations use OKLCH internally and produce sRGB HEX values. The palette generator is deterministic for a given configuration; exploration uses a seeded, dependency-free PRNG to create reproducible configurations. Runtime generation does not use AI, external APIs, or network access.
+Quick Palette is a pnpm workspace containing a TypeScript CLI, a Preact browser application, and shared palette packages. Palette calculations use OKLCH internally and produce sRGB HEX values. The palette generator is deterministic for a given configuration; exploration uses a seeded, dependency-free PRNG to create reproducible configurations. Runtime generation does not use AI, external APIs, or network access.
 
-The CLI layer owns prompts, terminal previews, and output. The core layer owns color normalization, conversion, gamut mapping, and palette generation.
+The CLI layer owns prompts and terminal output. The Web layer owns DOM interaction, URL state, themes, clipboard access, and downloads. Core owns palette behavior, while Format owns pure text serialization.
 
 ```text
-src/
+apps/
+  cli/    Published CLI package and bundled executable
+  web/    Vite and Preact browser application
+packages/
   core/   Color rules, seeded random configuration, and generation
-  cli/    Command parsing, application flows, prompts, and output
+  format/ Pure HEX, JSON, and CSS formatting
 test/
   core/   Generation, harmony, and seeded random behavior
   cli/    Flow, process, packaging, prompt, and output behavior
 ```
 
-The dependency direction is `cli -> core`. Code in `src/core` must not depend on terminal or filesystem behavior.
+The dependency direction is `apps -> packages` and `format -> core`. Shared packages must not depend on the DOM, terminal, or filesystem. The CLI is bundled into `apps/cli/dist/index.js`, so the published `quick-palette` package has no runtime workspace dependency.
 
 ## Requirements
 
@@ -28,11 +31,21 @@ The dependency direction is `cli -> core`. Code in `src/core` must not depend on
 pnpm install
 pnpm start
 pnpm test
+pnpm web:test
+pnpm e2e
+pnpm css:validate
 pnpm typecheck
 pnpm build
+pnpm test:all
 ```
 
-`pnpm start` runs the TypeScript entry point with `tsx`. Pass CLI arguments directly after the script name, for example `pnpm start generate --seed 8f3a21c4`. `pnpm build` compiles the executable to `dist/cli/index.js`; `prepack` runs this build automatically.
+`pnpm start` runs the CLI TypeScript entry point with `tsx`. Pass CLI arguments directly after the script name, for example `pnpm start generate --seed 8f3a21c4`. `pnpm web:dev` starts Vite. `pnpm build` bundles the CLI and builds the production Web application. `pnpm test:all` is the CI-equivalent gate covering CLI/core tests, Web component tests, CSS policy, typechecking, builds, Playwright flows, axe checks, and responsive overflow checks.
+
+Install the Playwright browser once on a development machine before running E2E tests:
+
+```bash
+pnpm --filter @quick-palette/web exec playwright install chromium
+```
 
 ## Generation rules
 

@@ -5,9 +5,9 @@ import {
   MIN_ANALOGOUS_SPREAD,
   MIN_CHROMA_SCALE,
   MIN_HUE_ROTATION,
-} from "../../../src/core/constants.js";
-import { resolvePaletteConfig } from "../../../src/core/config.js";
-import { isValidHex, normalizeHex } from "../../../src/core/color.js";
+} from "@quick-palette/core";
+import { resolvePaletteConfig } from "@quick-palette/core";
+import { isValidHex, normalizeHex } from "@quick-palette/core";
 import {
   HARMONY_MODES,
   HARMONY_TUNINGS,
@@ -17,7 +17,7 @@ import {
   type PaletteAdjustments,
   type PaletteConfig,
   type StepCount,
-} from "../../../src/core/types.js";
+} from "@quick-palette/core";
 
 export interface ParsedUrlState {
   readonly mode: "explore" | "configure";

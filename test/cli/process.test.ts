@@ -3,8 +3,8 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { generatePalette } from "../../src/core/generate.js";
-import { generateRandomPaletteConfig } from "../../src/core/random.js";
+import { generatePalette } from "../../packages/core/src/generate.js";
+import { generateRandomPaletteConfig } from "../../packages/core/src/random.js";
 
 const projectRoot = process.cwd();
 const temporaryDirectories: string[] = [];
@@ -19,7 +19,7 @@ afterEach(() => {
 function runCli(args: readonly string[], input?: string) {
   return spawnSync(
     process.execPath,
-    ["--import", "tsx", "src/cli/index.ts", ...args],
+    ["--import", "tsx", "apps/cli/src/index.ts", ...args],
     { cwd: projectRoot, encoding: "utf8", timeout: 10_000, input },
   );
 }
@@ -124,7 +124,7 @@ describe("CLI process", () => {
     const executable = `{${process.execPath.replaceAll("}", "\\}")}}`;
     const script = [
       "set timeout 10",
-      `spawn ${executable} --import tsx src/cli/index.ts`,
+      `spawn ${executable} --import tsx apps/cli/src/index.ts`,
       'expect "How would you like to start?"',
       'send "\\003"',
       'expect "Cancelled."',

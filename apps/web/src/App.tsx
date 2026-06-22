@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useReducer } from "preact/hooks";
-import { normalizeHex } from "../../../src/core/color.js";
-import { generatePalette } from "../../../src/core/generate.js";
+import { normalizeHex } from "@quick-palette/core";
+import { generatePalette } from "@quick-palette/core";
 import { ConfigPanel } from "./components/ConfigPanel.js";
 import { ExplorePanel } from "./components/ExplorePanel.js";
 import { ExportPanel } from "./components/ExportPanel.js";
@@ -83,9 +83,10 @@ export function App() {
           {state.mode === "explore" ? (
             <ExplorePanel
               seed={state.candidate.seed}
+              seedError={state.seedError}
               onNext={() => dispatch({ type: "nextRequested" })}
               onSeed={(seed) => dispatch({ type: "seedSubmitted", seed })}
-              onEdit={() => dispatch({ type: "modeChanged", mode: "configure" })}
+              onEdit={() => dispatch({ type: "candidateEditRequested" })}
             />
           ) : (
             <ConfigPanel

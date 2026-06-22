@@ -1,4 +1,4 @@
-import { normalizeHex } from "../core/color.js";
+import { normalizeHex } from "@quick-palette/core";
 import {
   MAX_ANALOGOUS_SPREAD,
   MAX_CHROMA_SCALE,
@@ -6,7 +6,7 @@ import {
   MIN_ANALOGOUS_SPREAD,
   MIN_CHROMA_SCALE,
   MIN_HUE_ROTATION,
-} from "../core/constants.js";
+} from "@quick-palette/core";
 import {
   HARMONY_MODES,
   HARMONY_TUNINGS,
@@ -17,7 +17,7 @@ import {
   type NeutralMode,
   type RandomSeed,
   type StepCount,
-} from "../core/types.js";
+} from "@quick-palette/core";
 
 export type OutputFormat = "hex" | "json" | "css";
 

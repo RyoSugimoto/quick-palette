@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CliArgumentError, HELP_TEXT, parseCliArgs } from "../../src/cli/args.js";
+import { CliArgumentError, HELP_TEXT, parseCliArgs } from "../../apps/cli/src/args.js";
 
 describe("CLI argument parsing", () => {
   it("keeps no-argument startup interactive", () => {

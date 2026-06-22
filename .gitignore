@@ -3,3 +3,5 @@ tmp/
 node_modules/
 .pnpm-store/
 dist/
+apps/web/playwright-report/
+apps/web/test-results/

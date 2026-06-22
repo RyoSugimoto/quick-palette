@@ -1,4 +1,4 @@
-import type { HarmonyMode, HarmonyTuning } from "../../src/core/types.js";
+import type { HarmonyMode, HarmonyTuning } from "../../packages/core/src/types.js";
 
 interface PerceptualHarmonyFixture {
   readonly baseColor: string;

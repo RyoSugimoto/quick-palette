@@ -1,12 +1,12 @@
-import { DEFAULT_COLOR_STEPS, DEFAULT_NEUTRAL_STEPS } from "../core/constants.js";
-import { generatePalette } from "../core/generate.js";
+import { DEFAULT_COLOR_STEPS, DEFAULT_NEUTRAL_STEPS } from "@quick-palette/core";
+import { generatePalette } from "@quick-palette/core";
 import type {
   HarmonyMode,
   HarmonyTuning,
   NeutralMode,
   PaletteConfig,
   PaletteResult,
-} from "../core/types.js";
+} from "@quick-palette/core";
 import { writeCssOutput, writeJsonOutput } from "./output.js";
 import {
   promptBaseColor,

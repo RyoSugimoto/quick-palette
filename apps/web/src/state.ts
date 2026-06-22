@@ -1,5 +1,10 @@
-import { createPaletteCandidate, nextPaletteCandidate, type PaletteCandidate } from "../../../src/core/explore.js";
-import type { PaletteConfig } from "../../../src/core/types.js";
+import {
+  createPaletteCandidate,
+  InvalidRandomSeedError,
+  nextPaletteCandidate,
+  type PaletteCandidate,
+} from "@quick-palette/core";
+import type { PaletteConfig } from "@quick-palette/core";
 import { normalizeDependentFields, parseUrlState } from "./url-state.js";
 
 export interface AppState {
@@ -8,12 +13,14 @@ export interface AppState {
   readonly config: PaletteConfig;
   readonly draftBaseColor: string;
   readonly baseColorError?: string | undefined;
+  readonly seedError?: string | undefined;
   readonly status?: string | undefined;
   readonly warning?: string | undefined;
 }
 
 export type AppAction =
   | { readonly type: "modeChanged"; readonly mode: AppState["mode"] }
+  | { readonly type: "candidateEditRequested" }
   | { readonly type: "nextRequested" }
   | { readonly type: "seedSubmitted"; readonly seed: string }
   | { readonly type: "configChanged"; readonly config: PaletteConfig }
@@ -36,13 +43,23 @@ export function createInitialState(): AppState {
 
 export function appReducer(state: AppState, action: AppAction): AppState {
   if (action.type === "modeChanged") {
-    const config = action.mode === "configure" ? state.candidate.config : state.config;
     return {
       ...state,
       mode: action.mode,
-      config,
-      draftBaseColor: config.baseColor,
+      draftBaseColor: state.config.baseColor,
       baseColorError: undefined,
+      seedError: undefined,
+      status: undefined,
+    };
+  }
+  if (action.type === "candidateEditRequested") {
+    return {
+      ...state,
+      mode: "configure",
+      config: state.candidate.config,
+      draftBaseColor: state.candidate.config.baseColor,
+      baseColorError: undefined,
+      seedError: undefined,
       status: undefined,
     };
   }
@@ -52,21 +69,28 @@ export function appReducer(state: AppState, action: AppAction): AppState {
       ...state,
       mode: "explore",
       candidate,
-      config: candidate.config,
-      draftBaseColor: candidate.config.baseColor,
+      seedError: undefined,
       status: undefined,
     };
   }
   if (action.type === "seedSubmitted") {
-    const candidate = createPaletteCandidate(action.seed);
-    return {
-      ...state,
-      mode: "explore",
-      candidate,
-      config: candidate.config,
-      draftBaseColor: candidate.config.baseColor,
-      status: `Loaded seed ${candidate.seed}.`,
-    };
+    try {
+      const candidate = createPaletteCandidate(action.seed);
+      return {
+        ...state,
+        mode: "explore",
+        candidate,
+        seedError: undefined,
+        status: `Loaded seed ${candidate.seed}.`,
+      };
+    } catch (error) {
+      if (!(error instanceof InvalidRandomSeedError)) throw error;
+      return {
+        ...state,
+        seedError: "Enter a non-empty seed.",
+        status: undefined,
+      };
+    }
   }
   if (action.type === "configChanged") {
     const config = normalizeDependentFields(action.config);

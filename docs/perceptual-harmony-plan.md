@@ -150,7 +150,7 @@ This option is intended for categorical distinction, not sequential or diverging
 Add the adjustment as a core-only pure function:
 
 ```text
-src/core/
+packages/core/src/
   perceptual-harmony.ts   Candidate generation and purpose scoring
   constants.ts            Search shifts, limits, and scoring weights
   types.ts                HarmonyTuning

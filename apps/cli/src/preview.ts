@@ -2,13 +2,13 @@ import {
   DEFAULT_ANALOGOUS_SPREAD,
   DEFAULT_CHROMA_SCALE,
   DEFAULT_HUE_ROTATION,
-} from "../core/constants.js";
+} from "@quick-palette/core";
 import type {
   HarmonyMode,
   HarmonyTuning,
   NeutralMode,
   PaletteResult,
-} from "../core/types.js";
+} from "@quick-palette/core";
 import { formatHexOutput } from "./output.js";
 
 const HARMONY_LABELS: Readonly<Record<HarmonyMode, string>> = {

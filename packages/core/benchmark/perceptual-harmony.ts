@@ -1,8 +1,8 @@
 import { performance } from "node:perf_hooks";
-import { hexToOklch, normalizeHue } from "../core/color.js";
-import { HUE_OFFSETS, PERCEPTUAL_HUE_SHIFTS } from "../core/constants.js";
-import { tuneHarmonyHues } from "../core/perceptual-harmony.js";
-import type { HarmonyMode } from "../core/types.js";
+import { hexToOklch, normalizeHue } from "../src/color.js";
+import { HUE_OFFSETS, PERCEPTUAL_HUE_SHIFTS } from "../src/constants.js";
+import { tuneHarmonyHues } from "../src/perceptual-harmony.js";
+import type { HarmonyMode } from "../src/types.js";
 
 const SAMPLE_COUNT = 100;
 const PENTADIC_P95_LIMIT_MS = 200;

@@ -8,6 +8,9 @@ export function downloadText(filename: string, content: string, type: string): v
   const link = document.createElement("a");
   link.href = url;
   link.download = filename;
-  link.click();
-  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  try {
+    link.click();
+  } finally {
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
 }

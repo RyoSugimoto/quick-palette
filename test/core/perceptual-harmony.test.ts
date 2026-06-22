@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { hexToOklch, isInSrgb, mapToSrgb, normalizeHue } from "../../src/core/color.js";
+import { hexToOklch, isInSrgb, mapToSrgb, normalizeHue } from "../../packages/core/src/color.js";
 import {
   HUE_OFFSETS,
   PERCEPTUAL_HUE_SHIFTS,
   PERCEPTUAL_REPRESENTATIVE_LIGHTNESS,
-} from "../../src/core/constants.js";
-import { generatePalette } from "../../src/core/generate.js";
-import { tuneHarmonyHues } from "../../src/core/perceptual-harmony.js";
-import { HARMONY_TUNINGS, type HarmonyMode } from "../../src/core/types.js";
+} from "../../packages/core/src/constants.js";
+import { generatePalette } from "../../packages/core/src/generate.js";
+import { tuneHarmonyHues } from "../../packages/core/src/perceptual-harmony.js";
+import { HARMONY_TUNINGS, type HarmonyMode } from "../../packages/core/src/types.js";
 import { PERCEPTUAL_HARMONY_FIXTURES } from "../fixtures/perceptual-harmony.js";
 
 const purposes = HARMONY_TUNINGS.filter((tuning) => tuning !== "mechanical");

@@ -6,12 +6,12 @@ import {
   RANDOM_HARMONIES,
   RANDOM_HARMONY_TUNINGS,
   RANDOM_NEUTRAL_MODES,
-} from "../../src/core/constants.js";
-import { generatePalette } from "../../src/core/generate.js";
+} from "../../packages/core/src/constants.js";
+import { generatePalette } from "../../packages/core/src/generate.js";
 import {
   generateRandomPaletteConfig,
   InvalidRandomSeedError,
-} from "../../src/core/random.js";
+} from "../../packages/core/src/random.js";
 
 describe("random palette configuration", () => {
   it("returns the same configuration for the same seed", () => {

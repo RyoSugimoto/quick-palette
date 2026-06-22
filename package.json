@@ -1,54 +1,24 @@
 {
-  "name": "quick-palette",
+  "name": "quick-palette-workspace",
   "version": "0.3.0",
-  "description": "Explore and generate reproducible OKLCH-based color palettes from the command line.",
-  "license": "MIT",
-  "author": "Ryo Sugimoto",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/RyoSugimoto/quick-palette.git"
-  },
-  "homepage": "https://github.com/RyoSugimoto/quick-palette#readme",
-  "bugs": {
-    "url": "https://github.com/RyoSugimoto/quick-palette/issues"
-  },
-  "keywords": [
-    "color",
-    "palette",
-    "oklch",
-    "cli"
-  ],
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
-  "engines": {
-    "node": ">=22"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
+  "private": true,
   "packageManager": "pnpm@11.6.0",
   "type": "module",
-  "bin": {
-    "quick-palette": "./dist/cli/index.js"
-  },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "pnpm --filter quick-palette build && pnpm web:build",
+    "css:validate": "pnpm --filter @quick-palette/web css:validate",
+    "e2e": "pnpm --filter @quick-palette/web e2e",
     "web:build": "pnpm --filter @quick-palette/web build",
     "web:dev": "pnpm --filter @quick-palette/web dev",
+    "web:test": "pnpm --filter @quick-palette/web test",
     "web:typecheck": "pnpm --filter @quick-palette/web typecheck",
-    "prepack": "pnpm build",
-    "prepublishOnly": "pnpm test --exclude test/cli/package.test.ts && pnpm typecheck",
-    "start": "tsx src/cli/index.ts",
-    "test": "vitest run",
+    "start": "pnpm --filter quick-palette start",
+    "test": "vitest run --exclude 'apps/web/**'",
     "test:core": "vitest run test/core",
-    "benchmark:tuning": "pnpm build && node dist/benchmark/perceptual-harmony.js",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
-  },
-  "dependencies": {
-    "colorjs.io": "^0.6.1"
+    "test:pack": "vitest run test/cli/package.test.ts",
+    "test:all": "pnpm test && pnpm web:test && pnpm css:validate && pnpm typecheck && pnpm build && pnpm e2e",
+    "benchmark:tuning": "pnpm --filter @quick-palette/core benchmark:tuning",
+    "typecheck": "pnpm --filter './packages/**' --filter './apps/**' -r typecheck"
   },
   "devDependencies": {
     "@types/node": "^25.9.3",

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { configurePalette, exportPalette } from "../../src/cli/configure.js";
-import type { PromptInterface } from "../../src/cli/prompt.js";
-import type { PaletteConfig } from "../../src/core/types.js";
+import { configurePalette, exportPalette } from "../../apps/cli/src/configure.js";
+import type { PromptInterface } from "../../apps/cli/src/prompt.js";
+import type { PaletteConfig } from "../../packages/core/src/types.js";
 
 const initialConfig: PaletteConfig = {
   baseColor: "#2563EB",

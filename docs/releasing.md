@@ -28,9 +28,9 @@ Use a squash-merge title that follows this format when a pull request contains c
 
 After changes reach `main`, the `release-please` GitHub Actions workflow opens or updates a release pull request. Review these generated changes:
 
-- `package.json` contains the intended next version.
-- `.release-please-manifest.json` contains the same version.
-- `CHANGELOG.md` accurately summarizes the release.
+- Root `package.json` and `apps/cli/package.json` contain the same intended next version.
+- `.release-please-manifest.json` contains the same version under `.`.
+- `apps/cli/CHANGELOG.md` accurately summarizes the release.
 - The release pull request contains every change intended for this version.
 
 Do not publish from the release pull request branch. Merge it when the version and changelog are ready.
@@ -50,6 +50,7 @@ git fetch origin --tags
 git status --short
 git describe --tags --exact-match
 node -p "require('./package.json').version"
+node -p "require('./apps/cli/package.json').version"
 ```
 
 `git status --short` must print nothing. The tag and package version must match, for example `v0.2.0` and `0.2.0`. Stop if they differ; do not repair generated version files manually.
@@ -61,10 +62,13 @@ Install exactly the locked dependencies, run the quality gates, and inspect the 
 ```bash
 pnpm install --frozen-lockfile
 pnpm test
+pnpm web:test
+pnpm css:validate
 pnpm typecheck
 pnpm build
-node dist/cli/index.js --help
-npm pack --dry-run
+pnpm e2e
+node apps/cli/dist/index.js --help
+(cd apps/cli && npm pack --dry-run)
 ```
 
 Confirm that the package contains the compiled `dist` files, `README.md`, `LICENSE`, and package metadata, with no source files, local configuration, or secrets. The `prepack` script also rebuilds automatically when the package is packed or published.
@@ -75,7 +79,7 @@ Verify the npm account and publish from the released commit:
 
 ```bash
 npm whoami
-npm publish
+(cd apps/cli && npm publish)
 ```
 
 Complete the npm two-factor authentication prompt when required. `package.json` sets `publishConfig.access` to `public`, so no additional access flag is needed.
@@ -93,7 +97,7 @@ npm view quick-palette version
 
 Replace `X.Y.Z` with the released version. Both commands must resolve to the version represented by the GitHub release.
 
-Run the `npx` check outside this repository. When it is run from the `quick-palette` repository, npm may treat the current project as the requested package instead of installing the published version. Because the repository itself does not have a `node_modules/.bin/quick-palette` link, this can fail with `sh: quick-palette: command not found` even when the published package is valid. Changing the npm cache does not resolve this name collision; using a temporary directory as shown above verifies the package in an isolated environment.
+Run the `npx` check outside this repository. Using a temporary directory as shown above ensures npm verifies the published package rather than a local workspace package.
 
 ## If publication fails
 

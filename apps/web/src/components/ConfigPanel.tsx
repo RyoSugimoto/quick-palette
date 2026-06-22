@@ -8,7 +8,7 @@ import {
   MIN_ANALOGOUS_SPREAD,
   MIN_CHROMA_SCALE,
   MIN_HUE_ROTATION,
-} from "../../../../src/core/constants.js";
+} from "@quick-palette/core";
 import {
   HARMONY_MODES,
   HARMONY_TUNINGS,
@@ -20,7 +20,7 @@ import {
   type PaletteAdjustments,
   type PaletteConfig,
   type StepCount,
-} from "../../../../src/core/types.js";
+} from "@quick-palette/core";
 
 interface ConfigPanelProps {
   readonly config: PaletteConfig;

@@ -16,7 +16,7 @@ import {
   promptHarmonyTuning,
   select,
   type PromptInterface,
-} from "../../src/cli/prompt.js";
+} from "../../apps/cli/src/prompt.js";
 
 const options = [
   { label: "First", value: "first" },

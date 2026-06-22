@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import { explorePalettes } from "../../src/cli/explore.js";
-import type { ExplorationAction, PromptInterface } from "../../src/cli/prompt.js";
-import { generatePalette } from "../../src/core/generate.js";
-import { generateRandomPaletteConfig } from "../../src/core/random.js";
+import { explorePalettes } from "../../apps/cli/src/explore.js";
+import type { ExplorationAction, PromptInterface } from "../../apps/cli/src/prompt.js";
+import { generatePalette } from "../../packages/core/src/generate.js";
+import { generateRandomPaletteConfig } from "../../packages/core/src/random.js";
 
 const prompt: PromptInterface = {
   question: vi.fn(),

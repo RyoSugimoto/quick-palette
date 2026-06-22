@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_PALETTE_CONFIG, resolvePaletteConfig } from "../../src/core/config.js";
-import { createPaletteCandidate, nextPaletteCandidate } from "../../src/core/explore.js";
-import { formatCssOutput, formatJsonOutput, formatPlainHexOutput } from "../../src/core/format.js";
-import { generatePalette } from "../../src/core/generate.js";
-import { formatHexOutput } from "../../src/cli/output.js";
+import { DEFAULT_PALETTE_CONFIG, resolvePaletteConfig } from "../../packages/core/src/config.js";
+import { createPaletteCandidate, nextPaletteCandidate } from "../../packages/core/src/explore.js";
+import { formatCssOutput, formatJsonOutput, formatPlainHexOutput } from "../../packages/format/src/index.js";
+import { generatePalette } from "../../packages/core/src/generate.js";
+import { formatHexOutput } from "../../apps/cli/src/output.js";
 
 describe("browser-shared behavior", () => {
   it("uses the CLI generation defaults without a seed", () => {

@@ -1,6 +1,23 @@
 # Quick Palette
 
-Explore reproducible OKLCH-based color palettes from the command line. The default flow shows a usable five-step palette after one selection, then lets you accept it or move to another candidate with one key.
+Build balanced, reproducible color scales in the browser or from the command line. Both interfaces share the same palette generation and formatting code, run locally, and reproduce the same output from the same seed and configuration.
+
+## Browser application
+
+Run the Preact application locally:
+
+```bash
+pnpm install
+pnpm web:dev
+```
+
+Explore starts with a reproducible palette and supports exact seed loading. Configure exposes the same harmony, tuning, neutral, step, and adjustment options as the CLI. The generated HEX, JSON, and CSS output can be copied, and JSON or CSS can be downloaded without a backend.
+
+The application supports System, Light, and Dark themes and stores only the selected theme preference in local storage. Palette data remains in the URL and browser; no palette data is sent to a server.
+
+## Command-line application
+
+The default CLI flow shows a usable five-step palette after one selection, then lets you accept it or move to another candidate with one key.
 
 ## Quick start
 

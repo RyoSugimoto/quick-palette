@@ -11,8 +11,9 @@ import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 
 const projectRoot = process.cwd();
+const packageRoot = join(projectRoot, "apps", "cli");
 const temporaryDirectory = mkdtempSync(join(tmpdir(), "color-palette-package-"));
-const manifest = JSON.parse(readFileSync(join(projectRoot, "package.json"), "utf8")) as {
+const manifest = JSON.parse(readFileSync(join(packageRoot, "package.json"), "utf8")) as {
   readonly name: string;
   readonly version: string;
   readonly bin: Record<string, string>;
@@ -27,7 +28,7 @@ describe("packed CLI", () => {
     const pack = spawnSync(
       "pnpm",
       ["pack", "--pack-destination", temporaryDirectory],
-      { cwd: projectRoot, encoding: "utf8", timeout: 30_000 },
+      { cwd: packageRoot, encoding: "utf8", timeout: 30_000 },
     );
     expect(pack.status, pack.stderr).toBe(0);
 

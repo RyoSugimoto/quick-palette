@@ -34,11 +34,11 @@ flowchart LR
 
 | File | Responsibility |
 | --- | --- |
-| `src/core/types.ts` | Category keys and the `ColorCandidate` shape |
-| `src/core/constants.ts` | Fixed category-to-candidate tables |
-| `src/core/color.ts` | HEX validation and normalization |
-| `src/cli/prompt.ts` | Method selection, category selection, and candidate selection |
-| `src/cli/index.ts` | Calls `promptBaseColor` initially and when the user chooses the base color again |
+| `packages/core/src/types.ts` | Category keys and the `ColorCandidate` shape |
+| `packages/core/src/constants.ts` | Fixed category-to-candidate tables |
+| `packages/core/src/color.ts` | HEX validation and normalization |
+| `apps/cli/src/prompt.ts` | Method selection, category selection, and candidate selection |
+| `apps/cli/src/index.ts` | Calls `promptBaseColor` initially and when the user chooses the base color again |
 | `test/core/generate.test.ts` | HEX and generated-color invariants |
 | `test/cli/prompt.test.ts` | Prompt selection behavior |
 | `README.md` | User-facing explanation of available choices |
@@ -50,7 +50,7 @@ Keep the dependency direction `cli -> core`. Candidate data belongs in `core/con
 
 For example, to add another candidate under the `calm` mood:
 
-1. Open `MOOD_CANDIDATES` in `src/core/constants.ts`.
+1. Open `MOOD_CANDIDATES` in `packages/core/src/constants.ts`.
 2. Add a `{ name, hex }` entry to the `calm` array at the position where it should appear in the CLI.
 3. Use a short, user-facing name that distinguishes the candidate from its siblings.
 4. Use canonical uppercase `#RRGGBB` for the stored HEX value.
@@ -72,8 +72,8 @@ Check the candidate visually in at least monochrome and complementary modes. A t
 
 For example, to add `focused` as a mood:
 
-1. Add `"focused"` to the `Mood` union in `src/core/types.ts`.
-2. Add a `focused` property to `MOOD_CANDIDATES` in `src/core/constants.ts`.
+1. Add `"focused"` to the `Mood` union in `packages/core/src/types.ts`.
+2. Add a `focused` property to `MOOD_CANDIDATES` in `packages/core/src/constants.ts`.
 3. Add at least one candidate to the new property.
 4. Run `pnpm typecheck`. The `Record<Mood, ...>` type reports a missing table entry or a misspelled key.
 5. Start the CLI and confirm that `Focused` appears in the expected position.
@@ -85,11 +85,11 @@ Category menu order follows property insertion order in the candidate table. Put
 
 A new method is a larger UX change. Examples include selecting from a product theme or loading a project-specific preset.
 
-1. Add a value to `BaseColorMethod` in `src/cli/prompt.ts`.
+1. Add a value to `BaseColorMethod` in `apps/cli/src/prompt.ts`.
 2. Add a user-facing option to the first menu in `promptBaseColor`.
-3. Define the method's keys and candidate data in `src/core/types.ts` and `src/core/constants.ts` when the method uses fixed choices.
+3. Define the method's keys and candidate data in `packages/core/src/types.ts` and `packages/core/src/constants.ts` when the method uses fixed choices.
 4. Add an explicit branch in `promptBaseColor` that always returns a valid HEX string.
-5. Keep terminal interaction in `src/cli/prompt.ts`. Do not read input from `src/core`.
+5. Keep terminal interaction in `apps/cli/src/prompt.ts`. Do not read input from `packages/core`.
 6. Keep the result deterministic. The same choices must return the same base color without network calls, time, or randomness.
 7. Update `README.md` because the user will see a new choice.
 8. Update the Mermaid flow in `docs/ux-flow.md`.

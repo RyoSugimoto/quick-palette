@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/RyoSugimoto/quick-palette/compare/quick-palette-v0.2.1...quick-palette-v0.3.0) (2026-06-22)
+
+
+### Features
+
+* improve palette controls and CLI copy ([04f57fa](https://github.com/RyoSugimoto/quick-palette/commit/04f57fa1e72c4a4aef058dd41ff51dfca276268b))
+
 ## [0.2.1](https://github.com/RyoSugimoto/quick-palette/compare/quick-palette-v0.2.0...quick-palette-v0.2.1) (2026-06-21)
 
 

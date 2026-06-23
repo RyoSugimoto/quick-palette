@@ -2,6 +2,8 @@
 
 Explore reproducible OKLCH-based color palettes from the command line. The default flow shows a usable five-step palette after one selection, then lets you accept it or move to another candidate with one key.
 
+Quick Palette uses OKLCH internally to build balanced scales. You enter HEX values and guided choices, and export HEX, JSON, or CSS; OKLCH is not an input or output format.
+
 ## Quick start
 
 ```bash

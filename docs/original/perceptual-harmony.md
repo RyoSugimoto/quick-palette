@@ -1,4 +1,4 @@
-# Perceptual Harmony Implementation Plan
+# Perceptual Harmony
 
 ## Status
 
@@ -183,7 +183,7 @@ When the core behavior is stable, add a prompt after Color harmony:
 
 The preview must display the selected tuning. Choosing the harmony again should also ask for tuning again because the adjustment depends on the harmony. A separate review action for tuning can be considered later, but is not required for the first release.
 
-README descriptions should focus on expected use, not scoring formulas. Update `docs/ux-flow.md` with the additional prompt and review behavior when implementation begins.
+README descriptions should focus on expected use, not scoring formulas. Update `docs/original/ux-flow.md` with any prompt or review behavior changes.
 
 ## Delivery phases
 
